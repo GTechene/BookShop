@@ -1,0 +1,68 @@
+﻿@using BookShop.web.Data
+
+@inject PriceHttpClient PriceHttpClient 
+
+
+<div class="card">
+    <div class="card-header">
+        Cart
+    </div>
+
+    <ul class="list-group list-group-flush">
+    @if (SelectedBooks.Count == 0)
+    {
+        <li class="list-group-item">Empty Cart</li>
+    }
+    else
+    {
+        <div>
+            @foreach (var (title, count, isbn) in SelectedBooks.GroupBy(book => book.ISBN)
+                .Select(group => (group.First().Title, group.Count(), group.Key))
+                .OrderBy(t => t.Title))
+            {
+                <li class="list-group-item">
+                    <div class="d-flex flex-row">
+                        <span class="flex-fill"><span>@count</span>x @title</span>
+                        <button class="border-0 bg-transparent font-weight-bolder" @onclick="@(_ => OnBookRemoved.InvokeAsync(isbn))">❌</button>
+                    </div>
+                </li>
+            }
+            @if (Price != null)
+            {
+                <div class="d-flex flex-row p-1">
+                    <span class="flex-fill align-self-baseline text-uppercase text-end">Total:</span>
+                    <PriceView class="align-self-baseline" Price="@Price.Total"/>
+                </div>
+                <div class="text-end p-1 fst-italic">
+                    @foreach (var discount in @Price.Discounts)
+                    {
+                        <div>@discount</div>
+                    }
+                </div>
+            }
+        </div>
+    }
+    </ul>
+</div>
+
+@code {
+
+    [Parameter]
+    public List<Book> SelectedBooks { get; set; } = null!;
+    
+    [Parameter]
+    public EventCallback<string> OnBookRemoved { get; set; }
+    
+    private PriceDetails? Price { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (SelectedBooks.Count == 0)
+        {
+            return;
+        }
+        
+        var isbns = SelectedBooks.Select(book => book.ISBN).ToArray();
+        Price = await PriceHttpClient.GetCartPrice(isbns);
+    }
+}

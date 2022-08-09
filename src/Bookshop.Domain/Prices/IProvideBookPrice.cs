@@ -2,5 +2,5 @@
 
 public interface IProvideBookPrice
 {
-    Price GetPrice(ISBN bookId);
+    Price GetPrice(ISBN bookId, string currency);
 }

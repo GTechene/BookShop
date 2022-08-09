@@ -1,4 +1,7 @@
-﻿using BookShop.domain.Pricing.Discounts;
+﻿using System.Collections;
+using System.Collections.Immutable;
+using BookShop.domain.Pricing.Discounts;
+using BookShop.domain.Pricing.Discounts.Types;
 using BookShop.domain.Pricing.Prices;
 
 namespace BookShop.domain.Pricing;
@@ -14,49 +17,99 @@ public class CartPricer
         this.bookPriceProvider = bookPriceProvider;
     }
     
-    public Price ComputePrice(Cart cart)
+    public (Price, AppliedDiscounts) ComputePrice(Cart cart, string currency)
     {
-        return FindBestPrice(cart);
+        return FindBestPrice(cart, currency);
     }
 
-    private Price ComputeCartPriceWithoutDiscount(Cart cart)
+    private Price ComputeCartPriceWithoutDiscount(Cart cart, string currency)
     {
-        return cart.Aggregate(Price.Zero, (total, book) => 
-            total + bookPriceProvider.GetPrice(book)
+        return cart.Aggregate(Price.Zero(currency), (total, book) => 
+            total + bookPriceProvider.GetPrice(book, currency)
         );
     }
 
-    private Price FindBestPrice(Cart cart)
+    private (Price, AppliedDiscounts) FindBestPrice(Cart cart, string currency)
     {
         if (cart.IsEmpty)
         {
-            return Price.Zero;
+            return (Price.Zero(currency), AppliedDiscounts.Empty);
         }
 
         var applicableDiscountDefinitions = GetApplicableDiscountsDefinitions(cart);
 
-        var price = ComputeCartPriceWithoutDiscount(cart);
+        var price = ComputeCartPriceWithoutDiscount(cart, currency);
+
+        var discounts = AppliedDiscounts.Empty;
 
         foreach (var applicableDiscountDefinition in applicableDiscountDefinitions)
         {
-            var (subCart, remainingCart) = applicableDiscountDefinition.ApplyTo(cart);
+            var (appliedDiscount, remainingCart) = applicableDiscountDefinition.ApplyTo(cart);
 
-            var subCartPrice = ComputeCartPriceWithoutDiscount(subCart);
+            var subCartPrice = ComputeCartPriceWithoutDiscount(appliedDiscount.Cart, currency);
 
-            var discountedPrice = applicableDiscountDefinition.ApplyDiscount(subCartPrice);
+            var discountedPrice = appliedDiscount.Apply(subCartPrice);
 
-            var bestPriceOnRemainingCart = FindBestPrice(remainingCart);
+            var (bestPriceOnRemainingCart, appliedDiscounts) = FindBestPrice(remainingCart, currency);
 
             var cartPrice = discountedPrice + bestPriceOnRemainingCart;
-            
-            price = new[] { cartPrice, price }.Min();
+
+            if (cartPrice < price)
+            {
+                price = cartPrice;
+                discounts = AppliedDiscounts.Empty
+                    .Add(appliedDiscount)
+                    .Append(appliedDiscounts);
+
+            }
         }
 
-        return price!;
+        return (price, discounts);
     }
 
     private IEnumerable<DiscountDefinition> GetApplicableDiscountsDefinitions(Cart cart)
     {
         return discountDefinitionsProvider.Get().Where(discount => discount.IsApplicable(cart));
+    }
+}
+
+public record AppliedDiscount(Cart Cart, DiscountType Type)
+{
+    public Price Apply(Price price)
+    {
+        return Type.Apply(price);
+    }
+}   
+
+public class AppliedDiscounts : IEnumerable<AppliedDiscount>
+{
+    private ImmutableList<AppliedDiscount> AppliedDiscountsList { get; init; } = ImmutableList<AppliedDiscount>.Empty;
+
+    public static readonly AppliedDiscounts Empty = new();
+
+    public AppliedDiscounts Add(AppliedDiscount appliedDiscount)
+    {
+        return new AppliedDiscounts
+        {
+            AppliedDiscountsList = AppliedDiscountsList.Add(appliedDiscount)
+        };
+    }
+    
+    public AppliedDiscounts Append(AppliedDiscounts appliedDiscounts)
+    {
+        return new AppliedDiscounts
+        {
+            AppliedDiscountsList = appliedDiscounts.Aggregate(AppliedDiscountsList, (discounts, discount) => discounts.Add(discount))
+        };
+    }
+    
+    public IEnumerator<AppliedDiscount> GetEnumerator()
+    {
+        return AppliedDiscountsList.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

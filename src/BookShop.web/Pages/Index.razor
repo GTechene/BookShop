@@ -1,0 +1,50 @@
+﻿@page "/"
+@using BookShop.web.Data
+@inject CatalogHttpClient CatalogHttpClient 
+
+<PageTitle>Catalog</PageTitle>
+
+@if (Catalog is null)
+{
+    <p>...LOADING...</p>
+}
+else
+{
+    <div class="d-flex flex-row">  
+        <div class="flex-fill d-flex flex-column">
+            @foreach (var book in Catalog.Books)
+            {
+                <BookView Book="@book" OnBookAdded="@SelectBook" />
+            }    
+        </div>
+        
+        <div style="width:500px;min-height:350px;">
+            <CartView SelectedBooks="@selectedBooks" OnBookRemoved="@RemoveBook"/>
+        </div>
+    </div>
+}
+
+
+@code {
+    private Catalog? Catalog { get; set; }
+
+    private readonly List<Book> selectedBooks = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Catalog = await CatalogHttpClient.GetCatalog();
+    }
+
+    private void SelectBook(Book book)
+    {
+        selectedBooks.Add(book);
+    }
+    
+    private void RemoveBook(string isbn)
+    {
+        var book = selectedBooks.First(book => book.ISBN == isbn);
+        selectedBooks.Remove(book);
+    }
+
+}
+

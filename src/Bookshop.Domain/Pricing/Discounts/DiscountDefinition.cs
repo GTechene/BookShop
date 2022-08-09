@@ -20,18 +20,14 @@ public class DiscountDefinition
         return $"Discount of {Type} for {Target}";
     }
 
-    public (Cart target, Cart remainingCart) ApplyTo(Cart cart)
+    public (AppliedDiscount, Cart remainingCart) ApplyTo(Cart cart)
     {
-        return Target.GetTarget(cart);
+        var (target, remainingCart) = Target.GetTarget(cart);
+        return (new AppliedDiscount(target, Type), remainingCart);
     }
 
     public bool IsApplicable(Cart cart)
     {
         return Target.Matches(cart);
-    }
-
-    public Price ApplyDiscount(Price price)
-    {
-        return Type.Apply(price);
     }
 }

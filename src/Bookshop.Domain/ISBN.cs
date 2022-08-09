@@ -70,6 +70,15 @@ public abstract record ISBN
 
             return registrationGroup;
         }
+        
+        public override string ToString()
+        {
+            var registrationGroup = $"{RegistrationGroup}".PadLeft(2, '0');
+            var registrantStr = $"{Registrant}".PadLeft(4, '0');
+            var publicationStr = $"{Publication}".PadLeft(3, '0');
+            
+            return $"{registrationGroup}{registrantStr}{publicationStr}-{CheckDigit}";
+        }
     };
 
     public record ISBN13(int Gs1Prefix, int RegistrationGroup, int Registrant, int Publication, int CheckDigit) : ISBN
@@ -157,6 +166,14 @@ public abstract record ISBN
             }
 
             return gs1Prefix;
+        }
+
+        public override string ToString()
+        {
+            var registrationGroup = $"{RegistrationGroup}".PadLeft(2, '0');
+            var registrantStr = $"{Registrant}".PadLeft(4, '0');
+            var publicationStr = $"{Publication}".PadLeft(3, '0');
+            return $"{Gs1Prefix}-{registrationGroup}{registrantStr}{publicationStr}-{CheckDigit}";
         }
     };
 

@@ -1,5 +1,6 @@
 ﻿using BookShop.domain;
 using BookShop.domain.Pricing;
+using BookShop.domain.Pricing.Prices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.api.Controllers;
@@ -21,11 +22,14 @@ public class PriceController : ControllerBase
         var cart = Cart.Empty
             .Add(request.Books.Select(ISBN.Parse).ToArray());
 
-        var price = pricer.ComputePrice(cart);
+        var (price, discounts) = pricer.ComputePrice(cart, request.Currency);
 
-        return new PriceResponse(price.Amount);
+        return new PriceResponse(
+            price,
+            discounts.Select(discount => $"{discount.Type} discount applied").ToArray()
+            );
     }
 }
 
-public record PriceRequest(string[] Books);
-public record PriceResponse(decimal Price);
+public record PriceRequest(string[] Books, string Currency);
+public record PriceResponse(Price Total, string[] Discounts);

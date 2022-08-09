@@ -1,0 +1,33 @@
+﻿@using BookShop.web.Data
+
+
+<div class="card mb-3" style="max-width: 540px;">
+  <div class="row g-0">
+    <div class="col-md-4">
+      <img
+        src="@Book.PictureUrl"
+        alt="Cover of @Book.Title"
+        class="img-fluid rounded-start"
+      />
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">@Book.Title</h5>
+        <p class="card-text">
+          Author:&nbsp;<b>@Book.Author</b>
+        </p>
+        <PriceView Price="@Book.UnitPrice" Class="card-text" />
+        <button class="btn btn-primary mt-3" @onclick="@(_ => OnBookAdded.InvokeAsync(Book))">Add to Cart ></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public Book Book { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<Book> OnBookAdded { get; set; } 
+}
