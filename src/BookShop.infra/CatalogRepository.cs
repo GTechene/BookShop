@@ -45,6 +45,13 @@ public class CatalogRepository : IProvideCatalog
         new Uri(
             "https://s1.qwant.com/thumbr/0x380/1/e/23b6f89fe9f2666c323ad3231dc97fe8cf72eef5dc8eb2a9f59953f657fde8/9780545349222_0.jpg?u=https%3A%2F%2Fd5i0fhmkm8zzl.cloudfront.net%2F9780545349222_0.jpg&q=0&b=1&p=0&a=0"));
     
+    private static readonly BookReference MoonRising = new(
+        ISBN.Parse("978-0545685368"),
+        "Moon Rising (Wings of Fire #6)", 
+        "Tui T. Sutherland",
+        new Uri(
+            "https://s1.qwant.com/thumbr/0x380/9/9/683b67d0de9c96101174b7fda79181c3b581d8c38dad2ffeb97d9d9cbf496d/9781432874247.jpg?u=https%3A%2F%2Fi.thenile.io%2Fr1000%2F9781432874247.jpg%3Fr%3D5f1ae53b26fd2&q=0&b=1&p=0&a=0"));
+    
     
     private IEnumerable<Book> GetBooks()
     {
@@ -53,5 +60,6 @@ public class CatalogRepository : IProvideCatalog
         yield return new Book(TheHiddenKingdom, 20);
         yield return new Book(TheDarkSecret, 15);
         yield return new Book(TheBrightestNight, 5);
+        yield return new Book(MoonRising, 6);
     }
 }

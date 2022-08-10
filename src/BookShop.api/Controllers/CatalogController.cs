@@ -18,23 +18,28 @@ public class CatalogController : ControllerBase
     }
     
     [HttpGet]
-    public CatalogResponse GetCatalog(string currency)
+    public CatalogResponse GetCatalog(string currency, int pageNumber = 1, int numberOfItemsPerPage = 5)
     {
         var catalog = _catalogProvider.Get();
-
-        return new CatalogResponse(
-            catalog.Books.Select(book => new BookResponse(
+        var pages = catalog.Books.Chunk(numberOfItemsPerPage);
+        var booksToSend = pages
+            .ElementAt(pageNumber - 1)
+            .Select(book => new BookResponse(
                 book.Reference.Id.ToString(),
                 book.Reference.Title,
                 book.Reference.Author,
                 book.Reference.PictureUrl.ToString(),
                 book.Quantity.Amount,
                 _bookPriceProvider.GetPrice(book.Reference.Id, currency)
-            )).ToArray()
+            ));
+
+        return new CatalogResponse(
+            booksToSend.ToArray(),
+            pages.Count()
         );
     }
 
-    public record CatalogResponse(BookResponse[] Books);
+    public record CatalogResponse(BookResponse[] Books, int TotalNumberOfPages);
 
     public record BookResponse(string ISBN, string Title, string Author, string PictureUrl, int Quantity, Price UnitPrice);
 }
