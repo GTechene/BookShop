@@ -9,11 +9,11 @@ namespace BookShop.api.Controllers;
 [ApiController]
 public class PriceController : ControllerBase
 {
-    private readonly CartPricer pricer;
+    private readonly CartPricer _pricer;
 
     public PriceController(CartPricer pricer)
     {
-        this.pricer = pricer;
+        _pricer = pricer;
     }
     
     [HttpGet]
@@ -22,7 +22,7 @@ public class PriceController : ControllerBase
         var cart = Cart.Empty
             .Add(request.Books.Select(ISBN.Parse).ToArray());
 
-        var (price, discounts) = pricer.ComputePrice(cart, request.Currency);
+        var (price, discounts) = _pricer.ComputePrice(cart, request.Currency);
 
         return new PriceResponse(
             price,

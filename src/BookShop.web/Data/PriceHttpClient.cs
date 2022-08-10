@@ -1,6 +1,4 @@
-﻿using System.Web;
-
-namespace BookShop.web.Data;
+﻿namespace BookShop.web.Data;
 
 public class PriceHttpClient
 {

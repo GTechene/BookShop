@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Immutable;
-using BookShop.domain.Pricing.Discounts;
-using BookShop.domain.Pricing.Discounts.Types;
+﻿using BookShop.domain.Pricing.Discounts;
 using BookShop.domain.Pricing.Prices;
 
 namespace BookShop.domain.Pricing;
@@ -60,7 +57,6 @@ public class CartPricer
                 discounts = AppliedDiscounts.Empty
                     .Add(appliedDiscount)
                     .Append(appliedDiscounts);
-
             }
         }
 
@@ -70,46 +66,5 @@ public class CartPricer
     private IEnumerable<DiscountDefinition> GetApplicableDiscountsDefinitions(Cart cart)
     {
         return discountDefinitionsProvider.Get().Where(discount => discount.IsApplicable(cart));
-    }
-}
-
-public record AppliedDiscount(Cart Cart, DiscountType Type)
-{
-    public Price Apply(Price price)
-    {
-        return Type.Apply(price);
-    }
-}   
-
-public class AppliedDiscounts : IEnumerable<AppliedDiscount>
-{
-    private ImmutableList<AppliedDiscount> AppliedDiscountsList { get; init; } = ImmutableList<AppliedDiscount>.Empty;
-
-    public static readonly AppliedDiscounts Empty = new();
-
-    public AppliedDiscounts Add(AppliedDiscount appliedDiscount)
-    {
-        return new AppliedDiscounts
-        {
-            AppliedDiscountsList = AppliedDiscountsList.Add(appliedDiscount)
-        };
-    }
-    
-    public AppliedDiscounts Append(AppliedDiscounts appliedDiscounts)
-    {
-        return new AppliedDiscounts
-        {
-            AppliedDiscountsList = appliedDiscounts.Aggregate(AppliedDiscountsList, (discounts, discount) => discounts.Add(discount))
-        };
-    }
-    
-    public IEnumerator<AppliedDiscount> GetEnumerator()
-    {
-        return AppliedDiscountsList.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 }

@@ -8,19 +8,19 @@ namespace BookShop.api.Controllers;
 [ApiController]
 public class CatalogController : ControllerBase
 {
-    private readonly IProvideCatalog catalogProvider;
-    private readonly IProvideBookPrice bookPriceProvider;
+    private readonly IProvideCatalog _catalogProvider;
+    private readonly IProvideBookPrice _bookPriceProvider;
 
     public CatalogController(IProvideCatalog catalogProvider, IProvideBookPrice bookPriceProvider)
     {
-        this.catalogProvider = catalogProvider;
-        this.bookPriceProvider = bookPriceProvider;
+        _catalogProvider = catalogProvider;
+        _bookPriceProvider = bookPriceProvider;
     }
     
     [HttpGet]
     public CatalogResponse GetCatalog(string currency)
     {
-        var catalog = catalogProvider.Get();
+        var catalog = _catalogProvider.Get();
 
         return new CatalogResponse(
             catalog.Books.Select(book => new BookResponse(
@@ -29,7 +29,7 @@ public class CatalogController : ControllerBase
                 book.Reference.Author,
                 book.Reference.PictureUrl.ToString(),
                 book.Quantity.Amount,
-                bookPriceProvider.GetPrice(book.Reference.Id, currency)
+                _bookPriceProvider.GetPrice(book.Reference.Id, currency)
             )).ToArray()
         );
     }

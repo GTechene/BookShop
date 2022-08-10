@@ -1,4 +1,3 @@
-using BookShop.domain;
 using BookShop.domain.Catalog;
 using BookShop.domain.Pricing;
 using BookShop.domain.Pricing.Discounts;

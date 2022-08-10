@@ -1,6 +1,5 @@
 ﻿using BookShop.domain.Pricing.Discounts.Targets;
 using BookShop.domain.Pricing.Discounts.Types;
-using BookShop.domain.Pricing.Prices;
 
 namespace BookShop.domain.Pricing.Discounts;
 
