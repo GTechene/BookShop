@@ -1,4 +1,8 @@
-﻿namespace BookShop.domain;
+﻿// Disables warnings on Parse methods hiding the one from the ISBN abstract record. It is on purpose, to have a helper on the main record that will call the derived records' Parse while keeping the visibility of the derived records' Parse to public, making them usable by calling code. TL;DR : this is to avoid using different naming and introducing confusion.
+// ReSharper disable MemberHidesStaticFromOuterClass
+#pragma warning disable CS0108, CS0114
+
+namespace BookShop.domain;
 
 public abstract record ISBN
 {
@@ -10,7 +14,7 @@ public abstract record ISBN
 
             if (cleanedIsbn.Length != 10)
             {
-                throw new InvalidIsbnException($"Expected isbn with 10 digits. Actual {isbn.Length}");
+                throw new InvalidIsbnException($"Expected ISBN with 10 digits. Actual : {isbn.Length}");
             }
 
             var registrationGroup = ParseRegistrationGroup(cleanedIsbn);
@@ -89,7 +93,7 @@ public abstract record ISBN
 
             if (cleanedIsbn.Length != 13)
             {
-                throw new InvalidIsbnException($"Expected isbn with 13 digits. Actual {isbn.Length}");
+                throw new InvalidIsbnException($"Expected ISBN with 13 digits. Actual : {isbn.Length}");
             }
 
             var gs1Prefix = ParseGs1Prefix(cleanedIsbn);
