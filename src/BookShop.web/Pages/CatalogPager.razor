@@ -1,0 +1,28 @@
+﻿@using BookShop.web.Data
+
+<nav aria-label="Catalog pages">
+    <ul class="pagination justify-content-center">
+        @for (var pageNumber = 1; pageNumber <= TotalNumberOfPages; pageNumber++)
+        {
+            @if (pageNumber == CurrentPage)
+            {
+                <CatalogPageLink PageNumber="pageNumber" OnPageSelected="OnPageSelected" IsCurrent="true"></CatalogPageLink>
+            }
+            else
+            {
+                <CatalogPageLink PageNumber="pageNumber" OnPageSelected="OnPageSelected" IsCurrent="false"></CatalogPageLink>
+            }
+        }
+    </ul>
+</nav>
+
+@code {
+    [Parameter]
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public int TotalNumberOfPages { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnPageSelected { get; set; }
+}

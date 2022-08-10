@@ -1,0 +1,23 @@
+﻿@if (IsCurrent)
+{
+    <li class="page-item active" aria-current="page">
+        <a class="page-link" @onclick="@(_ => OnPageSelected.InvokeAsync(PageNumber))">@PageNumber</a>
+    </li>
+}
+else
+{
+    <li class="page-item">
+        <a class="page-link" @onclick="@(_ => OnPageSelected.InvokeAsync(PageNumber))">@PageNumber</a>
+    </li>
+}
+
+@code {
+    [Parameter]
+    public int PageNumber { get; set; }
+
+    [Parameter]
+    public bool IsCurrent { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnPageSelected { get; set; }
+}

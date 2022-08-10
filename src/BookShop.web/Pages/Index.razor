@@ -12,10 +12,14 @@ else
 {
     <div class="d-flex flex-row">  
         <div class="flex-fill d-flex flex-column">
+            @if (Catalog.TotalNumberOfPages > 1)
+            {
+                <CatalogPager CurrentPage="@_currentPage" TotalNumberOfPages="Catalog.TotalNumberOfPages" OnPageSelected="@ChangePage" />
+            }
             @foreach (var book in Catalog.Books)
             {
-                <BookView Book="@book" OnBookAdded="@SelectBook" />
-            }    
+                <BookView Book="@book" OnBookAdded="@SelectBook"/>
+            }
         </div>
         
         <div style="width:500px;min-height:350px;">
@@ -27,8 +31,8 @@ else
 
 @code {
     private Catalog? Catalog { get; set; }
-
     private readonly List<Book> _selectedBooks = new();
+    private int _currentPage = 1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,5 +50,10 @@ else
         _selectedBooks.Remove(book);
     }
 
+    private async Task ChangePage(int pageToRequest)
+    {
+        Catalog = await CatalogHttpClient.GetCatalog(pageToRequest);
+        _currentPage = pageToRequest;
+    }
 }
 

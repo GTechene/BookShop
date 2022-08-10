@@ -1,29 +1,26 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{05AE562F-9229-442B-95DC-285B9FA5649C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2A1F5814-7B49-497F-8A6A-7DCDB28F11B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookShop.api", "src\BookShop.api\BookShop.api.csproj", "{3DEF290F-C777-46E7-8600-A9150A38025E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.api", "src\BookShop.api\BookShop.api.csproj", "{3DEF290F-C777-46E7-8600-A9150A38025E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookShop.domain", "src\BookShop.domain\BookShop.domain.csproj", "{59FB79E3-5D7D-4748-8EF9-25E75E0C4600}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.domain", "src\BookShop.domain\BookShop.domain.csproj", "{59FB79E3-5D7D-4748-8EF9-25E75E0C4600}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookShop.domain.Tests", "tests\BookShop.domain.Tests\BookShop.domain.Tests.csproj", "{2CE17409-E3F0-431F-B817-C4A484960A61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.domain.Tests", "tests\BookShop.domain.Tests\BookShop.domain.Tests.csproj", "{2CE17409-E3F0-431F-B817-C4A484960A61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookShop.infra", "src\BookShop.infra\BookShop.infra.csproj", "{0BF24C46-028D-471F-83F4-68BFB8F0A487}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.infra", "src\BookShop.infra\BookShop.infra.csproj", "{0BF24C46-028D-471F-83F4-68BFB8F0A487}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookShop.web", "src\BookShop.web\BookShop.web.csproj", "{3A4211D4-B225-49B4-82F3-C40FC7D1CD6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.web", "src\BookShop.web\BookShop.web.csproj", "{3A4211D4-B225-49B4-82F3-C40FC7D1CD6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3DEF290F-C777-46E7-8600-A9150A38025E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -47,11 +44,17 @@ Global
 		{3A4211D4-B225-49B4-82F3-C40FC7D1CD6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A4211D4-B225-49B4-82F3-C40FC7D1CD6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3DEF290F-C777-46E7-8600-A9150A38025E} = {05AE562F-9229-442B-95DC-285B9FA5649C}
 		{59FB79E3-5D7D-4748-8EF9-25E75E0C4600} = {05AE562F-9229-442B-95DC-285B9FA5649C}
 		{2CE17409-E3F0-431F-B817-C4A484960A61} = {2A1F5814-7B49-497F-8A6A-7DCDB28F11B2}
 		{0BF24C46-028D-471F-83F4-68BFB8F0A487} = {05AE562F-9229-442B-95DC-285B9FA5649C}
 		{3A4211D4-B225-49B4-82F3-C40FC7D1CD6F} = {05AE562F-9229-442B-95DC-285B9FA5649C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9AEFFB3-35B5-4E5A-BB50-B7D1AEBBFBF4}
 	EndGlobalSection
 EndGlobal
