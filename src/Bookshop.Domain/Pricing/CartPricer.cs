@@ -5,13 +5,13 @@ namespace BookShop.domain.Pricing;
 
 public class CartPricer
 {
-    private readonly IProvideDiscountDefinitions discountDefinitionsProvider;
-    private readonly IProvideBookPrice bookPriceProvider;
+    private readonly IProvideDiscountDefinitions _discountDefinitionsProvider;
+    private readonly IProvideBookPrice _bookPriceProvider;
 
     public CartPricer(IProvideDiscountDefinitions discountDefinitionsProvider, IProvideBookPrice bookPriceProvider)
     {
-        this.discountDefinitionsProvider = discountDefinitionsProvider;
-        this.bookPriceProvider = bookPriceProvider;
+        _discountDefinitionsProvider = discountDefinitionsProvider;
+        _bookPriceProvider = bookPriceProvider;
     }
     
     public (Price, AppliedDiscounts) ComputePrice(Cart cart, string currency)
@@ -22,7 +22,7 @@ public class CartPricer
     private Price ComputeCartPriceWithoutDiscount(Cart cart, string currency)
     {
         return cart.Aggregate(Price.Zero(currency), (total, book) => 
-            total + bookPriceProvider.GetPrice(book, currency)
+            total + _bookPriceProvider.GetPrice(book, currency)
         );
     }
 
@@ -65,6 +65,6 @@ public class CartPricer
 
     private IEnumerable<DiscountDefinition> GetApplicableDiscountsDefinitions(Cart cart)
     {
-        return discountDefinitionsProvider.Get().Where(discount => discount.IsApplicable(cart));
+        return _discountDefinitionsProvider.Get().Where(discount => discount.IsApplicable(cart));
     }
 }

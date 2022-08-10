@@ -2,11 +2,11 @@
 
 public class Percent
 {
-    private readonly decimal amount;
+    private readonly decimal _amount;
 
     private Percent(decimal amount)
     {
-        this.amount = amount;
+        _amount = amount;
     }
         
     public static implicit operator Percent(decimal amount)
@@ -16,12 +16,12 @@ public class Percent
     
     public static implicit operator decimal(Percent percent)
     {
-        return percent.amount;
+        return percent._amount;
     }
 
     private decimal RatioValue()
     {
-        return amount / 100;
+        return _amount / 100;
     }
 
     public Percent ComplementaryRatioValue()
@@ -33,6 +33,6 @@ public class Percent
 
     public override string ToString()
     {
-        return $"{amount}%";
+        return $"{_amount}%";
     }
 }

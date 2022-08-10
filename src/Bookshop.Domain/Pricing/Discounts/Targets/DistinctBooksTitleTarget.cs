@@ -2,21 +2,21 @@
 
 public sealed class DistinctBooksTitleTarget : DiscountTarget
 {
-    private readonly int count;
+    private readonly int _count;
 
     public DistinctBooksTitleTarget(int count)
     {
-        this.count = count;
+        _count = count;
     }
     
     public override bool Matches(Cart cart)
     {
-        return cart.Distinct().Count() >= count;
+        return cart.Distinct().Count() >= _count;
     }
 
     public override (Cart target, Cart remaining) GetTarget(Cart cart)
     {
-        var titles = cart.Distinct().Take(count).ToArray();
+        var titles = cart.Distinct().Take(_count).ToArray();
         var target = Cart.Empty.Add(titles);
         var remaining = cart.Remove(titles);
         return (target, remaining);
@@ -24,6 +24,6 @@ public sealed class DistinctBooksTitleTarget : DiscountTarget
 
     public override string ToString()
     {
-        return $"{count} distinct book titles";
+        return $"{_count} distinct book titles";
     }
 }

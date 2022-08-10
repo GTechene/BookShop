@@ -12,7 +12,7 @@ namespace BookShop.domain.Tests;
 
 public class CartPricerShould
 {
-    private readonly List<DiscountDefinition> availableDiscountsDefinitions = new()
+    private readonly List<DiscountDefinition> _availableDiscountsDefinitions = new()
     {
         new DiscountDefinition(NoDiscountType.Instance, AllBooksTarget.Instance),
         new DiscountDefinition(new PercentageDiscountType(5), new DistinctBooksTitleTarget(2)),
@@ -38,17 +38,17 @@ public class CartPricerShould
     private const decimal FiveBooksDiscountValue = 5 * (1 - 0.25m);
     private const string Currency = "EUR";
 
-    private readonly CartPricer pricer;
+    private readonly CartPricer _pricer;
 
     public CartPricerShould()
     {
         var discountDefinitionProvider = Substitute.For<IProvideDiscountDefinitions>();
-        discountDefinitionProvider.Get().Returns(availableDiscountsDefinitions);
+        discountDefinitionProvider.Get().Returns(_availableDiscountsDefinitions);
 
         var bookPriceProvider = Substitute.For<IProvideBookPrice>();
         bookPriceProvider.GetPrice(Arg.Any<ISBN>(), Arg.Any<string>()).Returns(new Price(BookPrice, Currency));
         
-        pricer = new CartPricer(discountDefinitionProvider, bookPriceProvider);
+        _pricer = new CartPricer(discountDefinitionProvider, bookPriceProvider);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class CartPricerShould
             .Add(Books.TheLostHeir, Books.TheLostHeir, Books.TheLostHeir, 
                 Books.TheLostHeir, Books.TheLostHeir, Books.TheLostHeir);
 
-        var (price, _) = pricer.ComputePrice(cart, Currency);
+        var (price, _) = _pricer.ComputePrice(cart, Currency);
 
         Check.That(price).IsEqualTo(new Price(BookPrice * 6 * NoDiscountValue, Currency));
     }
@@ -69,7 +69,7 @@ public class CartPricerShould
         var cart = Cart.Empty
             .Add(Books.TheLostHeir, Books.TheDarkSecret);
 
-        var (price, _) = pricer.ComputePrice(cart, Currency);
+        var (price, _) = _pricer.ComputePrice(cart, Currency);
 
         Check.That(price).IsEqualTo(new Price(BookPrice * TwoBooksDiscountValue, Currency));
     }
@@ -82,7 +82,7 @@ public class CartPricerShould
             .Add(Books.TheLostHeir, Books.TheDarkSecret)
             .Add(Books.TheDarkSecret);
 
-        var (price, _) = pricer.ComputePrice(cart, Currency);
+        var (price, _) = _pricer.ComputePrice(cart, Currency);
         Check.That(price).IsEqualTo(new Price(BookPrice * (TwoBooksDiscountValue + TwoBooksDiscountValue + NoDiscountValue), Currency));
     }
 
@@ -92,7 +92,7 @@ public class CartPricerShould
         var cart = Cart.Empty
             .Add(Books.TheLostHeir, Books.TheDarkSecret, Books.TheDragonetProphecy);
 
-        var (price, _) = pricer.ComputePrice(cart, Currency);
+        var (price, _) = _pricer.ComputePrice(cart, Currency);
 
         Check.That(price).IsEqualTo(new Price(BookPrice * ThreeBooksDiscountValue, Currency));
     }
@@ -104,7 +104,7 @@ public class CartPricerShould
             .Add(Books.TheLostHeir, Books.TheDarkSecret, Books.TheDragonetProphecy)
             .Add(Books.TheLostHeir);
 
-        var (price, _) = pricer.ComputePrice(cart, Currency);
+        var (price, _) = _pricer.ComputePrice(cart, Currency);
 
         Check.That(price).IsEqualTo(new Price(BookPrice * (ThreeBooksDiscountValue + NoDiscountValue), Currency));
     }
@@ -115,7 +115,7 @@ public class CartPricerShould
         var cart = Cart.Empty
             .Add(Books.TheLostHeir, Books.TheDarkSecret, Books.TheDragonetProphecy, Books.TheHiddenKingdom);
 
-        var (price, _) = pricer.ComputePrice(cart, Currency);
+        var (price, _) = _pricer.ComputePrice(cart, Currency);
             
         Check.That(price).IsEqualTo(new Price(BookPrice * FourBooksDiscountValue, Currency));
     }
@@ -127,7 +127,7 @@ public class CartPricerShould
             .Add(Books.TheLostHeir, Books.TheDarkSecret, Books.TheDragonetProphecy, Books.TheHiddenKingdom)
             .Add(Books.TheHiddenKingdom);
 
-        var (price, _) = pricer.ComputePrice(cart, Currency);
+        var (price, _) = _pricer.ComputePrice(cart, Currency);
 
         Check.That(price).IsEqualTo(new Price(BookPrice * (FourBooksDiscountValue + NoDiscountValue), Currency));
     }
@@ -138,7 +138,7 @@ public class CartPricerShould
         var cart = Cart.Empty
             .Add(Books.TheLostHeir, Books.TheDarkSecret, Books.TheDragonetProphecy, Books.TheHiddenKingdom, Books.TheBrightestNight);
 
-        var (price, _) = pricer.ComputePrice(cart, Currency);
+        var (price, _) = _pricer.ComputePrice(cart, Currency);
 
         Check.That(price).IsEqualTo(new Price(BookPrice * FiveBooksDiscountValue, Currency));
     }
@@ -151,7 +151,7 @@ public class CartPricerShould
             .Add(Books.TheHiddenKingdom)
             .Add(Books.TheHiddenKingdom);
 
-        var (price, _) = pricer.ComputePrice(cart, Currency);
+        var (price, _) = _pricer.ComputePrice(cart, Currency);
 
         var expectedDiscountValue = (FiveBooksDiscountValue + NoDiscountValue + NoDiscountValue);
 
@@ -168,7 +168,7 @@ public class CartPricerShould
             .Add(Books.TheHiddenKingdom)
             .Add(Books.TheBrightestNight);
 
-        var (price, _) = pricer.ComputePrice(cart, Currency);
+        var (price, _) = _pricer.ComputePrice(cart, Currency);
 
         Check.That(price).IsEqualTo(new Price(BookPrice * (FourBooksDiscountValue + FourBooksDiscountValue), Currency));
     }

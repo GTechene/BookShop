@@ -19,7 +19,7 @@ else
         </div>
         
         <div style="width:500px;min-height:350px;">
-            <CartView SelectedBooks="@selectedBooks" OnBookRemoved="@RemoveBook"/>
+            <CartView SelectedBooks="@_selectedBooks" OnBookRemoved="@RemoveBook"/>
         </div>
     </div>
 }
@@ -28,7 +28,7 @@ else
 @code {
     private Catalog? Catalog { get; set; }
 
-    private readonly List<Book> selectedBooks = new();
+    private readonly List<Book> _selectedBooks = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,13 +37,13 @@ else
 
     private void SelectBook(Book book)
     {
-        selectedBooks.Add(book);
+        _selectedBooks.Add(book);
     }
     
     private void RemoveBook(string isbn)
     {
-        var book = selectedBooks.First(book => book.ISBN == isbn);
-        selectedBooks.Remove(book);
+        var book = _selectedBooks.First(book => book.ISBN == isbn);
+        _selectedBooks.Remove(book);
     }
 
 }

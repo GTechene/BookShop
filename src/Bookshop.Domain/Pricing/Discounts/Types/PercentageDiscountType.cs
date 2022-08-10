@@ -8,7 +8,7 @@ public sealed class PercentageDiscountType : DiscountType
 
     public PercentageDiscountType(Percent discountInPercent)
     {
-        this.DiscountInPercent = discountInPercent;
+        DiscountInPercent = discountInPercent;
     }
     
     public override Price Apply(Price price)

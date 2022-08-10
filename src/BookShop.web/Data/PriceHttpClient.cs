@@ -2,16 +2,16 @@
 
 public class PriceHttpClient
 {
-    private readonly HttpClient httpClient;
+    private readonly HttpClient _httpClient;
 
     public PriceHttpClient(HttpClient httpClient)
     {
-        this.httpClient = httpClient;
+        _httpClient = httpClient;
     }
 
     public Task<PriceDetails?> GetCartPrice(IEnumerable<string> books)
     {
-        return httpClient.GetFromJsonAsync<PriceDetails>($"/api/Price{QueryString(books)}");
+        return _httpClient.GetFromJsonAsync<PriceDetails>($"/api/Price{QueryString(books)}");
     }
 
     private static string QueryString(IEnumerable<string> books)

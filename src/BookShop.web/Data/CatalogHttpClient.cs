@@ -4,15 +4,15 @@ public record Price(decimal Amount, string Currency);
 
 public class CatalogHttpClient
 {
-    private readonly HttpClient httpClient;
+    private readonly HttpClient _httpClient;
 
     public CatalogHttpClient(HttpClient httpClient)
     {
-        this.httpClient = httpClient;
+        _httpClient = httpClient;
     }
 
     public Task<Catalog?> GetCatalog() =>
-        httpClient.GetFromJsonAsync<Catalog>("/api/Catalog?Currency=EUR");
+        _httpClient.GetFromJsonAsync<Catalog>("/api/Catalog?Currency=EUR");
 
 }
 
