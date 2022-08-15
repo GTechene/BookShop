@@ -1,6 +1,6 @@
 ﻿using BookShop.domain.Pricing.Discounts;
 
-namespace BookShop.domain.Pricing.Prices;
+namespace BookShop.domain.Prices;
 
 public record Price(decimal Amount, string Currency)
 {
@@ -40,6 +40,4 @@ public record Price(decimal Amount, string Currency)
     {
         return p1.Amount >= p2.Amount;
     }
-
-    
 }

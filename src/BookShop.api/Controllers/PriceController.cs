@@ -1,6 +1,6 @@
 ﻿using BookShop.domain;
+using BookShop.domain.Prices;
 using BookShop.domain.Pricing;
-using BookShop.domain.Pricing.Prices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.api.Controllers;

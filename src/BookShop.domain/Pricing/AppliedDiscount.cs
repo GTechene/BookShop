@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
+using BookShop.domain.Prices;
 using BookShop.domain.Pricing.Discounts.Types;
-using BookShop.domain.Pricing.Prices;
 
 namespace BookShop.domain.Pricing;
 

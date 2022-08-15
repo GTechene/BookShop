@@ -1,4 +1,4 @@
-﻿using BookShop.domain.Pricing.Prices;
+﻿using BookShop.domain.Prices;
 
 namespace BookShop.domain.Pricing.Discounts.Types;
 

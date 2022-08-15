@@ -1,5 +1,5 @@
 ﻿using BookShop.domain.Catalog;
-using BookShop.domain.Pricing.Prices;
+using BookShop.domain.Prices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.api.Controllers;

@@ -1,5 +1,5 @@
 ﻿using BookShop.domain;
-using BookShop.domain.Pricing.Prices;
+using BookShop.domain.Prices;
 
 namespace BookShop.infra;
 

@@ -1,4 +1,4 @@
-﻿namespace BookShop.domain.Pricing.Prices;
+﻿namespace BookShop.domain.Prices;
 
 public interface IProvideBookPrice
 {

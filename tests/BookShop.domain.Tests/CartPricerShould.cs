@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using BookShop.domain.Prices;
 using BookShop.domain.Pricing;
 using BookShop.domain.Pricing.Discounts;
 using BookShop.domain.Pricing.Discounts.Targets;
 using BookShop.domain.Pricing.Discounts.Types;
-using BookShop.domain.Pricing.Prices;
 using NFluent;
 using NSubstitute;
 using Xunit;
