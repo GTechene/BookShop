@@ -1,7 +1,5 @@
 ﻿namespace BookShop.web.Data;
 
-public record Price(decimal Amount, string Currency);
-
 public class CatalogHttpClient
 {
     private readonly HttpClient _httpClient;
@@ -15,7 +13,3 @@ public class CatalogHttpClient
         _httpClient.GetFromJsonAsync<Catalog>($"/api/Catalog?Currency=EUR&PageNumber={requestedPage}");
 
 }
-
-public record Catalog(Book[] Books, int TotalNumberOfPages);
-
-public record Book(string ISBN, string Title, string Author, string PictureUrl, int Quantity, Price UnitPrice);

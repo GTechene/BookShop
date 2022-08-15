@@ -1,0 +1,82 @@
+﻿@using BookShop.web.Data
+
+@inject PriceHttpClient PriceHttpClient 
+
+<div class="card">
+    <div class="card-header">
+        Cart
+    </div>
+
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            @if (SelectedBooks.Count == 0)
+            {
+                <li class="list-group-item">Empty Cart</li>
+            }
+            else
+            {
+                @foreach (var (title, count, isbn) in SelectedBooks.GroupBy(book => book.ISBN)
+                    .Select(group => (group.First().Title, group.Count(), group.Key))
+                    .OrderBy(t => t.Title))
+                {
+                    <li class="list-group-item border-0">
+                        <div class="d-flex flex-row">
+                            <span class="flex-fill overflow-hidden"><span>@count</span>x @title</span>
+                            <button class="border-0 bg-transparent font-weight-bolder" @onclick="@(_ => OnBookRemoved.InvokeAsync(isbn))">❌</button>
+                        </div>
+                    </li>
+                }
+            }
+        </ul>
+        @if (Price != null)
+        {
+            <div>
+                <div class="d-flex flex-row pt-1">
+                    <span class="flex-fill align-self-baseline text-uppercase text-end pr-3">Total:</span>
+                    <Price class="align-self-baseline" Value="@Price.Total"/>
+                </div>
+
+                <CollapsiblePanel Visible="@Price.Discounts.Any()" Collapsed="true" class="m-2">
+                    <Header>
+                        <span class="flex-fill align-self-baseline text-lowercase text-end">
+                            <i>Discounts</i>
+                        </span>
+                    </Header>
+                    <Body>
+                    <ul class="text-end p-1 fst-italic">
+                        @foreach (var discount in @Price.Discounts)
+                        {
+                            <li class="list-group-item border-0 px-2 py-0">@discount</li>
+                        }
+                    </ul>
+                    </Body>
+                </CollapsiblePanel>
+            </div>
+        }
+    </div>
+
+
+</div>
+
+@code {
+
+    [Parameter]
+    public List<BookModel> SelectedBooks { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<string> OnBookRemoved { get; set; }
+
+    private PriceDetails? Price { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (SelectedBooks.Count == 0)
+        {
+            return;
+        }
+
+        var isbns = SelectedBooks.Select(book => book.ISBN).ToArray();
+        Price = await PriceHttpClient.GetCartPrice(isbns);
+    }
+
+}

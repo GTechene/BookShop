@@ -22,6 +22,3 @@ public class PriceHttpClient
         return queryString;
     }
 }
-
-public record PriceDetails(Price Total, string[] Discounts); 
-

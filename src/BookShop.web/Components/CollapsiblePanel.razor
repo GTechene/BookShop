@@ -3,12 +3,12 @@
     return;
 }
 
-<div>
-    <div class="d-flex px-2" onclick="@OnToggle">
-        <div class="flex-fill d-flex" style="cursor: pointer;">
+<div class="@Class">
+    <div class="d-flex px-2 bg-light" onclick="@OnToggle" style="cursor: pointer;">
+        <div class="p-2 flex-fill d-flex">
             @Header
         </div>
-        <div class="align-self-center">
+        <div class="p-2 align-self-center">
             @if (@Collapsed)
             {
                 <span>˃</span>
@@ -19,7 +19,7 @@
             }
         </div>
     </div>
-    <div class="@(@Collapsed ? "d-none" : "d-block")">
+    <div class="border border-light @(@Collapsed ? "d-none" : "d-block")">
         @Body
     </div>
 </div>
@@ -37,6 +37,9 @@
 
     [Parameter]
     public bool Collapsed { get; set; } = true;
+
+    [Parameter]
+    public string? Class { get; set; }
 
     private void OnToggle()
     {

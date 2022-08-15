@@ -1,0 +1,18 @@
+﻿@using BookShop.web.Data
+
+@{
+    var (priceIntegerPart, priceFractionalPart) = Value.Amount.SplitParts(); 
+}
+<div class="@Class">
+    <span class="fs-2">@priceIntegerPart</span><span class="fs-6">.@priceFractionalPart.ToString("00")</span>&nbsp;<span class="text-uppercase">@Value.Currency</span>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public PriceModel Value { get; set; } = null!;
+
+    [Parameter]
+    public string? Class { get; set; }
+}

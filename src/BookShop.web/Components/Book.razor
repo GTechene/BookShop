@@ -1,0 +1,48 @@
+﻿
+<div class="card mb-3">
+  <div class="row g-0">
+    <div class="col-md-4">
+      <img
+        src="@BookToDisplay.PictureUrl"
+        alt="Cover of @BookToDisplay.Title"
+        class="img-fluid rounded-start"
+      />
+    </div> 
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">@BookToDisplay.Title</h5>
+        <p class="card-text">
+          Author:&nbsp;<b>@BookToDisplay.Author</b>
+        </p>
+        @if (BookToDisplay.Quantity <= 5)
+        {
+          <p class="card-text text-danger">
+            <i>⚠ Only <b>@BookToDisplay.Quantity</b> in stock ! ⚠</i>
+          </p>
+        }
+        else
+        {
+          <p class="card-text text-secondary">
+            <i>In stock: <b>@BookToDisplay.Quantity</b></i>
+          </p>  
+        }
+        <Price Value="@BookToDisplay.UnitPrice" Class="card-text" />
+        <button class="btn btn-primary mt-3" disabled="@Disabled" @onclick="@(_ => OnBookAdded.InvokeAsync(BookToDisplay))">Add to Cart ></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public BookModel BookToDisplay { get; set; } = null!;
+  
+    [Parameter]
+    public bool CanBeSelected { get; set; }
+
+    private bool Disabled => !CanBeSelected; 
+
+    [Parameter]
+    public EventCallback<BookModel> OnBookAdded { get; set; } 
+}

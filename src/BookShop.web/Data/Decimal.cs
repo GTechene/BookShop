@@ -1,4 +1,5 @@
-﻿namespace BookShop.web.Data;
+﻿// ReSharper disable once CheckNamespace
+namespace System;
 
 public static class DecimalExtensions
 {

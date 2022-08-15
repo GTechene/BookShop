@@ -1,69 +1,30 @@
 ﻿@page "/"
-@using BookShop.web.Data
-@inject CatalogHttpClient CatalogHttpClient 
 
 <PageTitle>Catalog</PageTitle>
 
-@if (Catalog is null)
-{
-    <div class="w-100 text-secondary text-center">
-        <div class="spinner-grow spinner-grow-sm" role="status"></div>
-        <div class="spinner-grow spinner-grow-sm" role="status"></div>
-        <div class="spinner-grow spinner-grow-sm" role="status"></div>
-        <span class="sr-only">Loading...</span>
+<div class="d-flex flex-row">
+    <div class="flex-fill d-flex flex-column mx-3">
+        <Catalog OnBookSelected="SelectBook"/>
     </div>
-}
-else
-{
-    <div class="d-flex flex-row">  
-        <div class="flex-fill d-flex flex-column">
-            @if (Catalog.TotalNumberOfPages > 1)
-            {
-                <CatalogPager CurrentPage="@_currentPage" TotalNumberOfPages="Catalog.TotalNumberOfPages" OnPageSelected="@ChangePage" />
-            }
-            @foreach (var book in Catalog.Books)
-            {
-                <BookView Book="@book" OnBookAdded="@SelectBook" CanBeAdded="@MaximumQuantityNotReached(book)" />
-            }
-        </div>
-        
-        <div style="width:500px;min-height:350px;">
-            <CartView SelectedBooks="@_selectedBooks" OnBookRemoved="@RemoveBook"/>
-        </div>
+
+    <div style="width:400px;min-height:350px;">
+        <Cart SelectedBooks="@_selectedBooks" OnBookRemoved="@RemoveBook"/>
     </div>
-}
+</div>
 
 
 @code {
-    private Catalog? Catalog { get; set; }
-    private readonly List<Book> _selectedBooks = new();
-    private int _currentPage = 1;
+    private readonly List<BookModel> _selectedBooks = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        Catalog = await CatalogHttpClient.GetCatalog();
-    }
-
-    private void SelectBook(Book book)
+    private void SelectBook(BookModel book)
     {
         _selectedBooks.Add(book);
     }
-    
+
     private void RemoveBook(string isbn)
     {
         var book = _selectedBooks.First(book => book.ISBN == isbn);
         _selectedBooks.Remove(book);
     }
 
-    private async Task ChangePage(int pageToRequest)
-    {
-        Catalog = await CatalogHttpClient.GetCatalog(pageToRequest);
-        _currentPage = pageToRequest;
-    }
-
-    private bool MaximumQuantityNotReached(Book book)
-    {
-        return _selectedBooks.Count(b => b.ISBN == book.ISBN) < book.Quantity;
-    }
 }
-

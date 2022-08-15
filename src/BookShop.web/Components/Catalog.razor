@@ -1,0 +1,53 @@
+﻿@inject CatalogHttpClient CatalogHttpClient
+
+@if (CatalogToDisplay is null)
+{
+    <div class="w-100 text-secondary text-center">
+        <div class="spinner-grow spinner-grow-sm" role="status"></div>
+        <div class="spinner-grow spinner-grow-sm" role="status"></div>
+        <div class="spinner-grow spinner-grow-sm" role="status"></div>
+        <span class="sr-only">Loading...</span>
+    </div>
+    return;
+}
+
+@if (CatalogToDisplay.TotalNumberOfPages > 1)
+{
+    <CatalogPager CurrentPage="@_currentPage" TotalNumberOfPages="CatalogToDisplay.TotalNumberOfPages" OnPageSelected="@ChangePage"/>
+}
+@foreach (var book in CatalogToDisplay.Books)
+{
+    <Book
+        BookToDisplay="@book"
+        OnBookAdded="@SelectBook"
+        CanBeSelected="true"/>
+}
+
+
+@code {
+    private CatalogModel? CatalogToDisplay { get; set; }
+    private int _currentPage = 1;
+
+    [Parameter]
+    public EventCallback<BookModel> OnBookSelected { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnBookRemoved { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CatalogToDisplay = await CatalogHttpClient.GetCatalog();
+    }
+
+    private async Task ChangePage(int pageToRequest)
+    {
+        CatalogToDisplay = await CatalogHttpClient.GetCatalog(pageToRequest);
+        _currentPage = pageToRequest;
+    }
+
+
+    private async Task SelectBook(BookModel book)
+    {
+        await OnBookSelected.InvokeAsync(book);
+    }
+}
