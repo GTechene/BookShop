@@ -4,7 +4,7 @@
 
 <div class="d-flex flex-row">
     <div class="flex-fill d-flex flex-column mx-3">
-        <Catalog OnBookSelected="SelectBook"/>
+        <Catalog OnBookSelected="SelectBook" CanSelectBook="CanSelectBook"/>
     </div>
 
     <div style="width:400px;min-height:350px;">
@@ -21,6 +21,11 @@
         _selectedBooks.Add(book);
     }
 
+    private bool CanSelectBook(BookModel book)
+    {
+        return _selectedBooks.Count(b => b.ISBN == book.ISBN) < book.Quantity;
+    }
+    
     private void RemoveBook(string isbn)
     {
         var book = _selectedBooks.First(book => book.ISBN == isbn);

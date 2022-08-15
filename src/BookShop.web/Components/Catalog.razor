@@ -20,7 +20,7 @@
     <Book
         BookToDisplay="@book"
         OnBookAdded="@SelectBook"
-        CanBeSelected="true"/>
+        CanBeSelected="@(CanSelectBook(book))"/>
 }
 
 
@@ -32,7 +32,7 @@
     public EventCallback<BookModel> OnBookSelected { get; set; }
 
     [Parameter]
-    public EventCallback<string> OnBookRemoved { get; set; }
+    public Predicate<BookModel> CanSelectBook { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
