@@ -21,7 +21,8 @@ public class CatalogController : ControllerBase
     public CatalogResponse GetCatalog(string currency, int pageNumber = 1, int numberOfItemsPerPage = 5)
     {
         var catalog = _catalogProvider.Get();
-        var pages = catalog.Books.Chunk(numberOfItemsPerPage);
+        // TODO : maybe this logic can be move in a CatalogService component ?
+        var pages = catalog.Books.Chunk(numberOfItemsPerPage).ToList();
         var booksToSend = pages
             .ElementAt(pageNumber - 1)
             .Select(book => new BookResponse(
