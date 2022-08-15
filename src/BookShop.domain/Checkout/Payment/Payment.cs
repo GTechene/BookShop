@@ -1,3 +1,3 @@
 ﻿namespace BookShop.domain.Checkout.Payment;
 
-public record Payment();
+public record Payment;

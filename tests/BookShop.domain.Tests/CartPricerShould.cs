@@ -10,24 +10,7 @@ using Xunit;
 
 namespace BookShop.domain.Tests;
 
-public class CartPricerShould
-{
-    private readonly List<DiscountDefinition> _availableDiscountsDefinitions = new()
-    {
-        new DiscountDefinition(NoDiscountType.Instance, AllBooksTarget.Instance),
-        new DiscountDefinition(new PercentageDiscountType(5), new DistinctBooksTitleTarget(2)),
-        new DiscountDefinition(new PercentageDiscountType(10), new DistinctBooksTitleTarget(3)),
-        new DiscountDefinition(new PercentageDiscountType(20), new DistinctBooksTitleTarget(4)),
-        new DiscountDefinition(new PercentageDiscountType(25), new DistinctBooksTitleTarget(5)),
-    };
-    private static class Books
-    {
-        public static readonly ISBN TheDragonetProphecy = ISBN.Parse("978-133888319-0");
-        public static readonly ISBN TheLostHeir = ISBN.Parse("978-054534919-2");
-        public static readonly ISBN TheHiddenKingdom = ISBN.Parse("978-133888321-3");
-        public static readonly ISBN TheDarkSecret = ISBN.Parse("978-133888322-0");
-        public static readonly ISBN TheBrightestNight = ISBN.Parse("978-060637017-2");
-    }
+public class CartPricerShould {
 
     private const decimal BookPrice = 8m;
 
@@ -38,6 +21,15 @@ public class CartPricerShould
     private const decimal FiveBooksDiscountValue = 5 * (1 - 0.25m);
     private const string Currency = "EUR";
 
+    private readonly List<DiscountDefinition> _availableDiscountsDefinitions = new()
+    {
+        new DiscountDefinition(NoDiscountType.Instance, AllBooksTarget.Instance),
+        new DiscountDefinition(new PercentageDiscountType(5), new DistinctBooksTitleTarget(2)),
+        new DiscountDefinition(new PercentageDiscountType(10), new DistinctBooksTitleTarget(3)),
+        new DiscountDefinition(new PercentageDiscountType(20), new DistinctBooksTitleTarget(4)),
+        new DiscountDefinition(new PercentageDiscountType(25), new DistinctBooksTitleTarget(5))
+    };
+
     private readonly CartPricer _pricer;
 
     public CartPricerShould()
@@ -47,7 +39,7 @@ public class CartPricerShould
 
         var bookPriceProvider = Substitute.For<IProvideBookPrice>();
         bookPriceProvider.GetPrice(Arg.Any<ISBN>(), Arg.Any<string>()).Returns(new Price(BookPrice, Currency));
-        
+
         _pricer = new CartPricer(discountDefinitionProvider, bookPriceProvider);
     }
 
@@ -55,7 +47,7 @@ public class CartPricerShould
     public void Apply_the_same_price_when_containing_an_order_six_books_with_the_same_title()
     {
         var cart = Cart.Empty
-            .Add(Books.TheLostHeir, Books.TheLostHeir, Books.TheLostHeir, 
+            .Add(Books.TheLostHeir, Books.TheLostHeir, Books.TheLostHeir,
                 Books.TheLostHeir, Books.TheLostHeir, Books.TheLostHeir);
 
         var (price, _) = _pricer.ComputePrice(cart, Currency);
@@ -116,7 +108,7 @@ public class CartPricerShould
             .Add(Books.TheLostHeir, Books.TheDarkSecret, Books.TheDragonetProphecy, Books.TheHiddenKingdom);
 
         var (price, _) = _pricer.ComputePrice(cart, Currency);
-            
+
         Check.That(price).IsEqualTo(new Price(BookPrice * FourBooksDiscountValue, Currency));
     }
 
@@ -153,7 +145,7 @@ public class CartPricerShould
 
         var (price, _) = _pricer.ComputePrice(cart, Currency);
 
-        var expectedDiscountValue = (FiveBooksDiscountValue + NoDiscountValue + NoDiscountValue);
+        var expectedDiscountValue = FiveBooksDiscountValue + NoDiscountValue + NoDiscountValue;
 
         Check.That(price).IsEqualTo(new Price(BookPrice * expectedDiscountValue, Currency));
     }
@@ -171,5 +163,13 @@ public class CartPricerShould
         var (price, _) = _pricer.ComputePrice(cart, Currency);
 
         Check.That(price).IsEqualTo(new Price(BookPrice * (FourBooksDiscountValue + FourBooksDiscountValue), Currency));
+    }
+
+    private static class Books {
+        public static readonly ISBN TheDragonetProphecy = ISBN.Parse("978-133888319-0");
+        public static readonly ISBN TheLostHeir = ISBN.Parse("978-054534919-2");
+        public static readonly ISBN TheHiddenKingdom = ISBN.Parse("978-133888321-3");
+        public static readonly ISBN TheDarkSecret = ISBN.Parse("978-133888322-0");
+        public static readonly ISBN TheBrightestNight = ISBN.Parse("978-060637017-2");
     }
 }

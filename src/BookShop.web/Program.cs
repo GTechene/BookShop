@@ -8,15 +8,13 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddHttpClient<CatalogHttpClient>(
-    (serviceProvider,httpClient) =>
-    {
+    (serviceProvider, httpClient) => {
         var options = serviceProvider.GetRequiredService<IOptions<BookShopApiOptions>>();
         httpClient.BaseAddress = options.Value.Catalog.Uri;
     });
 
 builder.Services.AddHttpClient<PriceHttpClient>(
-    (serviceProvider,httpClient) =>
-    {
+    (serviceProvider, httpClient) => {
         var options = serviceProvider.GetRequiredService<IOptions<BookShopApiOptions>>();
         httpClient.BaseAddress = options.Value.Price.Uri;
     });

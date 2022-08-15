@@ -6,17 +6,16 @@ namespace BookShop.api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CatalogController : ControllerBase
-{
-    private readonly IProvideCatalog _catalogProvider;
+public class CatalogController : ControllerBase {
     private readonly IProvideBookPrice _bookPriceProvider;
+    private readonly IProvideCatalog _catalogProvider;
 
     public CatalogController(IProvideCatalog catalogProvider, IProvideBookPrice bookPriceProvider)
     {
         _catalogProvider = catalogProvider;
         _bookPriceProvider = bookPriceProvider;
     }
-    
+
     [HttpGet]
     public CatalogResponse GetCatalog(string currency, int pageNumber = 1, int numberOfItemsPerPage = 5)
     {

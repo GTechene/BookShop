@@ -3,17 +3,16 @@ using BookShop.domain.Pricing.Discounts;
 
 namespace BookShop.domain.Pricing;
 
-public class CartPricer
-{
-    private readonly IProvideDiscountDefinitions _discountDefinitionsProvider;
+public class CartPricer {
     private readonly IProvideBookPrice _bookPriceProvider;
+    private readonly IProvideDiscountDefinitions _discountDefinitionsProvider;
 
     public CartPricer(IProvideDiscountDefinitions discountDefinitionsProvider, IProvideBookPrice bookPriceProvider)
     {
         _discountDefinitionsProvider = discountDefinitionsProvider;
         _bookPriceProvider = bookPriceProvider;
     }
-    
+
     public (Price, AppliedDiscounts) ComputePrice(Cart cart, string currency)
     {
         return FindBestPrice(cart, currency);
@@ -21,7 +20,7 @@ public class CartPricer
 
     private Price ComputeCartPriceWithoutDiscount(Cart cart, string currency)
     {
-        return cart.Aggregate(Price.Zero(currency), (total, book) => 
+        return cart.Aggregate(Price.Zero(currency), func: (total, book) =>
             total + _bookPriceProvider.GetPrice(book, currency)
         );
     }

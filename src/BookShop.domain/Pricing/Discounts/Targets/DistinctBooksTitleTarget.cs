@@ -1,14 +1,13 @@
 ﻿namespace BookShop.domain.Pricing.Discounts.Targets;
 
-public sealed class DistinctBooksTitleTarget : DiscountTarget
-{
+public sealed class DistinctBooksTitleTarget : DiscountTarget {
     private readonly int _count;
 
     public DistinctBooksTitleTarget(int count)
     {
         _count = count;
     }
-    
+
     public override bool Matches(Cart cart)
     {
         return cart.Distinct().Count() >= _count;

@@ -1,6 +1,5 @@
 ﻿namespace BookShop.domain.Pricing.Discounts;
 
-public interface IProvideDiscountDefinitions
-{
+public interface IProvideDiscountDefinitions {
     IEnumerable<DiscountDefinition> Get();
 }

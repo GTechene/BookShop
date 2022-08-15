@@ -3,17 +3,16 @@ using BookShop.domain.Pricing.Discounts.Types;
 
 namespace BookShop.domain.Pricing.Discounts;
 
-public class DiscountDefinition
-{
-    private DiscountType Type { get; }
+public class DiscountDefinition {
 
-    private DiscountTarget Target { get; }
-    
     public DiscountDefinition(DiscountType type, DiscountTarget target)
     {
         Type = type;
         Target = target;
     }
+    private DiscountType Type { get; }
+
+    private DiscountTarget Target { get; }
     public override string ToString()
     {
         return $"Discount of {Type} for {Target}";

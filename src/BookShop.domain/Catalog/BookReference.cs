@@ -6,4 +6,3 @@ public record BookReference(
     string Author,
     Uri PictureUrl
 );
-

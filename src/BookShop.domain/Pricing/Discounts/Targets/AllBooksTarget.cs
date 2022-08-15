@@ -1,11 +1,10 @@
 ﻿namespace BookShop.domain.Pricing.Discounts.Targets;
 
-public sealed class AllBooksTarget : DiscountTarget
-{
+public sealed class AllBooksTarget : DiscountTarget {
     public static readonly AllBooksTarget Instance = new();
 
-    private AllBooksTarget() { }
-    
+    private AllBooksTarget() {}
+
     public override bool Matches(Cart cart)
     {
         return true;

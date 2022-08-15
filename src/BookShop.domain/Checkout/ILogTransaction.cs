@@ -2,7 +2,6 @@
 
 namespace BookShop.domain.Checkout;
 
-public interface ILogTransaction
-{
+public interface ILogTransaction {
     void Add(ReceiptId id, IEnumerable<ISBN> books, Price checkoutPrice);
 }

@@ -1,7 +1,6 @@
 ﻿namespace BookShop.web.Data;
 
-public class PriceHttpClient
-{
+public class PriceHttpClient {
     private readonly HttpClient _httpClient;
 
     public PriceHttpClient(HttpClient httpClient)

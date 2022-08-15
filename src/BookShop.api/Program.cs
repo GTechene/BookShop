@@ -1,3 +1,6 @@
+using System.Net.Mime;
+using BookShop.api;
+using BookShop.domain;
 using BookShop.domain.Catalog;
 using BookShop.domain.Checkout;
 using BookShop.domain.Checkout.Payment;
@@ -5,6 +8,7 @@ using BookShop.domain.Prices;
 using BookShop.domain.Pricing;
 using BookShop.domain.Pricing.Discounts;
 using BookShop.infra;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +18,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<CartPricer>();
 
-builder.Services.AddScoped<IProvideBookPrice, BookPriceRepository>(); 
+builder.Services.AddScoped<IProvideBookPrice, BookPriceRepository>();
 builder.Services.AddScoped<IProvideDiscountDefinitions, DiscountDefinitionRepository>();
 
 
@@ -44,6 +48,41 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+app.UseExceptionHandler(exceptionHandlerApp => {
+    exceptionHandlerApp.Run(async context => {
+        context.Response.ContentType = MediaTypeNames.Application.Json;
+        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+        var exception = exceptionHandlerPathFeature?.Error;
+
+        switch (exception)
+        {
+            case ISBN.InvalidIsbnException invalidIsbn:
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsJsonAsync(ApiError.FromException(invalidIsbn));
+                break;
+            case UnavailableBooks unavailableBooks:
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsJsonAsync(ApiError.FromException(unavailableBooks));
+                break;
+            case InvalidCheckoutPrice invalidCheckoutPrice:
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsJsonAsync(ApiError.FromException(invalidCheckoutPrice));
+                break;
+            case PaymentProcessFailed paymentProcessFailed:
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsJsonAsync(ApiError.FromException(paymentProcessFailed));
+                break;
+            case {} ex:
+                context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                await context.Response.WriteAsJsonAsync(ApiError.FromException(ex));
+                break;
+        }
+
+    });
+});
+
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
@@ -51,4 +90,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-

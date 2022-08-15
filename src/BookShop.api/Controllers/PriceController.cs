@@ -7,17 +7,16 @@ namespace BookShop.api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PriceController : ControllerBase
-{
+public class PriceController : ControllerBase {
     private readonly CartPricer _pricer;
 
     public PriceController(CartPricer pricer)
     {
         _pricer = pricer;
     }
-    
+
     [HttpGet]
-    public PriceResponse GetPrice([FromQuery]PriceRequest request)
+    public PriceResponse GetPrice([FromQuery] PriceRequest request)
     {
         var cart = Cart.Empty
             .Add(request.Books.Select(ISBN.Parse).ToArray());
@@ -27,7 +26,7 @@ public class PriceController : ControllerBase
         return new PriceResponse(
             price,
             discounts.Select(discount => $"{discount.Type} discount applied").ToArray()
-            );
+        );
     }
 }
 

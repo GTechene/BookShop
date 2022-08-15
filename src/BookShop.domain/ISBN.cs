@@ -4,10 +4,32 @@
 
 namespace BookShop.domain;
 
-public abstract record ISBN
-{
-    public record ISBN10(int RegistrationGroup, int Registrant, int Publication, int CheckDigit) : ISBN
+public abstract record ISBN {
+
+    private static string Clean(string isbn)
     {
+        return isbn.Replace("-", "");
+    }
+
+    /// <summary>
+    ///     Convert a string to an isbn
+    /// </summary>
+    /// <param name="isbn"></param>
+    /// <returns>An instance of ISBN.ISBN10 or ISBN.ISBN13</returns>
+    /// <exception cref="InvalidIsbnException">Parse isbn is invalid</exception>
+    public static ISBN Parse(string isbn)
+    {
+        var cleanedIsbn = Clean(isbn);
+
+        return cleanedIsbn.Length switch
+        {
+            10 => ISBN10.Parse(cleanedIsbn),
+            13 => ISBN13.Parse(cleanedIsbn),
+            _ => throw new InvalidIsbnException("String is too short, only ISBN10 and ISBN13 are supported")
+        };
+    }
+
+    public record ISBN10(int RegistrationGroup, int Registrant, int Publication, int CheckDigit) : ISBN {
         internal static ISBN10 Parse(string isbn)
         {
             var cleanedIsbn = Clean(isbn);
@@ -21,12 +43,12 @@ public abstract record ISBN
             var registrant = ParseRegistrant(cleanedIsbn);
 
             var publication = ParsePublication(cleanedIsbn);
-            
+
             var checkDigit = ParseCheckDigit(cleanedIsbn);
 
             return new ISBN10(registrationGroup, registrant, publication, checkDigit);
-        } 
-        
+        }
+
         private static int ParseCheckDigit(string cleanedIsbn)
         {
             var checkDigitStr = cleanedIsbn.Substring(9, 1);
@@ -74,19 +96,18 @@ public abstract record ISBN
 
             return registrationGroup;
         }
-        
+
         public override string ToString()
         {
             var registrationGroup = $"{RegistrationGroup}".PadLeft(2, '0');
             var registrantStr = $"{Registrant}".PadLeft(4, '0');
             var publicationStr = $"{Publication}".PadLeft(3, '0');
-            
+
             return $"{registrationGroup}{registrantStr}{publicationStr}-{CheckDigit}";
         }
-    };
+    }
 
-    public record ISBN13(int Gs1Prefix, int RegistrationGroup, int Registrant, int Publication, int CheckDigit) : ISBN
-    {
+    public record ISBN13(int Gs1Prefix, int RegistrationGroup, int Registrant, int Publication, int CheckDigit) : ISBN {
         internal static ISBN13 Parse(string isbn)
         {
             var cleanedIsbn = Clean(isbn);
@@ -101,7 +122,7 @@ public abstract record ISBN
             var registrant = ParseRegistrant(cleanedIsbn);
 
             var publication = ParsePublication(cleanedIsbn);
-            
+
             var checkDigit = ParseCheckDigit(cleanedIsbn);
 
             return new ISBN13(gs1Prefix, registrationGroup, registrant, publication, checkDigit);
@@ -179,33 +200,9 @@ public abstract record ISBN
             var publicationStr = $"{Publication}".PadLeft(3, '0');
             return $"{Gs1Prefix}-{registrationGroup}{registrantStr}{publicationStr}-{CheckDigit}";
         }
-    };
-
-    private static string Clean(string isbn)
-    {
-        return isbn.Replace("-", "");
     }
-        
-    /// <summary>
-    /// Convert a string to an isbn
-    /// </summary>
-    /// <param name="isbn"></param>
-    /// <returns>An instance of ISBN.ISBN10 or ISBN.ISBN13</returns>
-    /// <exception cref="InvalidIsbnException">Parse isbn is invalid</exception>
-    public static ISBN Parse(string isbn)
-    {
-        var cleanedIsbn = Clean(isbn);
 
-        return cleanedIsbn.Length switch
-        {
-            10 => ISBN10.Parse(cleanedIsbn),
-            13 => ISBN13.Parse(cleanedIsbn),
-            _ => throw new InvalidIsbnException("String is too short, only ISBN10 and ISBN13 are supported")
-        };
-    } 
-    
-    public class InvalidIsbnException : Exception
-    {
-        public InvalidIsbnException(string message) : base(message) { }
-    } 
+    public class InvalidIsbnException : Exception {
+        public InvalidIsbnException(string message) : base(message) {}
+    }
 }

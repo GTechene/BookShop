@@ -4,8 +4,7 @@ using BookShop.domain.Pricing.Discounts.Types;
 
 namespace BookShop.infra;
 
-public class DiscountDefinitionRepository : IProvideDiscountDefinitions
-{
+public class DiscountDefinitionRepository : IProvideDiscountDefinitions {
     public IEnumerable<DiscountDefinition> Get()
     {
         yield return new DiscountDefinition(NoDiscountType.Instance, AllBooksTarget.Instance);
