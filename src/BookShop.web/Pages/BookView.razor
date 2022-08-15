@@ -9,15 +9,27 @@
         alt="Cover of @Book.Title"
         class="img-fluid rounded-start"
       />
-    </div>
+    </div> 
     <div class="col-md-8">
       <div class="card-body">
         <h5 class="card-title">@Book.Title</h5>
         <p class="card-text">
           Author:&nbsp;<b>@Book.Author</b>
         </p>
+        @if (Book.Quantity <= 5)
+        {
+          <p class="card-text text-danger">
+            <i>⚠ Only <b>@Book.Quantity</b> in stock ! ⚠</i>
+          </p>
+        }
+        else
+        {
+          <p class="card-text text-secondary">
+            <i>In stock: <b>@Book.Quantity</b></i>
+          </p>  
+        }
         <PriceView Price="@Book.UnitPrice" Class="card-text" />
-        <button class="btn btn-primary mt-3" @onclick="@(_ => OnBookAdded.InvokeAsync(Book))">Add to Cart ></button>
+        <button class="btn btn-primary mt-3" disabled="@Disabled" @onclick="@(_ => OnBookAdded.InvokeAsync(Book))">Add to Cart ></button>
       </div>
     </div>
   </div>
@@ -27,6 +39,11 @@
 @code {
     [Parameter]
     public Book Book { get; set; } = null!;
+  
+    [Parameter]
+    public bool CanBeAdded { get; set; }
+
+    private bool Disabled => !CanBeAdded; 
 
     [Parameter]
     public EventCallback<Book> OnBookAdded { get; set; } 

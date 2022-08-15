@@ -6,7 +6,12 @@
 
 @if (Catalog is null)
 {
-    <p>...LOADING...</p>
+    <div class="w-100 text-secondary text-center">
+        <div class="spinner-grow spinner-grow-sm" role="status"></div>
+        <div class="spinner-grow spinner-grow-sm" role="status"></div>
+        <div class="spinner-grow spinner-grow-sm" role="status"></div>
+        <span class="sr-only">Loading...</span>
+    </div>
 }
 else
 {
@@ -18,7 +23,7 @@ else
             }
             @foreach (var book in Catalog.Books)
             {
-                <BookView Book="@book" OnBookAdded="@SelectBook"/>
+                <BookView Book="@book" OnBookAdded="@SelectBook" CanBeAdded="@MaximumQuantityNotReached(book)" />
             }
         </div>
         
@@ -54,6 +59,11 @@ else
     {
         Catalog = await CatalogHttpClient.GetCatalog(pageToRequest);
         _currentPage = pageToRequest;
+    }
+
+    private bool MaximumQuantityNotReached(Book book)
+    {
+        return _selectedBooks.Count(b => b.ISBN == book.ISBN) < book.Quantity;
     }
 }
 

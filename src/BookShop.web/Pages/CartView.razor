@@ -20,7 +20,7 @@
                 .Select(group => (group.First().Title, group.Count(), group.Key))
                 .OrderBy(t => t.Title))
             {
-                <li class="list-group-item">
+                <li class="list-group-item border-0">
                     <div class="d-flex flex-row">
                         <span class="flex-fill"><span>@count</span>x @title</span>
                         <button class="border-0 bg-transparent font-weight-bolder" @onclick="@(_ => OnBookRemoved.InvokeAsync(isbn))">❌</button>
