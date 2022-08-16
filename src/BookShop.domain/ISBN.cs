@@ -6,6 +6,8 @@ namespace BookShop.domain;
 
 public abstract record ISBN {
 
+    // TODO : implement checksum algo
+    // TODO : instead of throwing exceptions here maybe we could use a Result
     private static string Clean(string isbn)
     {
         return isbn.Replace("-", "");

@@ -28,12 +28,12 @@ public class CheckoutController : ControllerBase {
         var receipt = _checkoutService.ProcessCheckout(checkout);
 
         var booksByQuantity = receipt.Books.ToDictionary(
-            keySelector: tuple => tuple.Book.Reference.Id.ToString(),
+            keySelector: tuple => tuple.Book.Id.ToString(),
             elementSelector: tuple => tuple.Quantity.Amount);
 
         var booksDetails = receipt.Books.ToDictionary(
-            keySelector: tuple => tuple.Book.Reference.Id.ToString(),
-            elementSelector: tuple => new PurchasedBookResponse(tuple.Book.Reference.Id.ToString(), tuple.Book.Reference.Title));
+            keySelector: tuple => tuple.Book.Id.ToString(),
+            elementSelector: tuple => new PurchasedBookResponse(tuple.Book.Id.ToString(), tuple.Book.Title));
 
         return new CheckoutResponse(
             receipt.Id.ToString(),

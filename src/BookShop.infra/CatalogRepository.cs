@@ -66,7 +66,7 @@ public class CatalogRepository : IProvideCatalog, ILockCatalog, IUpdateCatalog {
         return new Catalog(_books);
     }
 
-    public void Remove(IReadOnlyCollection<(Book Book, Quantity Quantity)> books)
+    public void Remove(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books)
     {
         foreach (var (book, quantity) in books)
         {
@@ -85,9 +85,9 @@ public class CatalogRepository : IProvideCatalog, ILockCatalog, IUpdateCatalog {
         yield return new Book(MoonRising, 6);
     }
 
-    private void RemoveBook(Book book, Quantity quantity)
+    private void RemoveBook(BookReference book, Quantity quantity)
     {
-        var existingBook = _books.Single(b => b.Reference.Id == book.Reference.Id);
+        var existingBook = _books.Single(b => b.Reference.Id == book.Id);
         var newBook = existingBook with
         {
             Quantity = existingBook.Quantity - quantity

@@ -9,7 +9,7 @@
             @Header
         </div>
         <div class="p-2 align-self-center">
-            @if (@Collapsed)
+            @if (Collapsed)
             {
                 <span>˃</span>
             }
@@ -19,7 +19,7 @@
             }
         </div>
     </div>
-    <div class="border border-light @(@Collapsed ? "d-none" : "d-block")">
+    <div class="border border-light @(Collapsed ? "d-none" : "d-block")">
         @Body
     </div>
 </div>

@@ -1,5 +1,5 @@
 ﻿namespace BookShop.domain.Catalog;
 
 public interface IUpdateCatalog {
-    void Remove(IReadOnlyCollection<(Book Book, Quantity Quantity)> books);
+    void Remove(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books);
 }

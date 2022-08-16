@@ -1,6 +1,4 @@
-﻿@using BookShop.web.Data
-
-@inject PriceHttpClient PriceHttpClient 
+﻿@inject PriceHttpClient PriceHttpClient 
 
 <div class="card @Class" style="@Style">
     <div class="card-header">
@@ -44,7 +42,7 @@
                     </Header>
                     <Body>
                     <ul class="text-end p-1 fst-italic">
-                        @foreach (var discount in @Price.Discounts)
+                        @foreach (var discount in Price.Discounts)
                         {
                             <li class="list-group-item border-0 px-2 py-0">@discount</li>
                         }
@@ -68,7 +66,7 @@
 
     [Parameter]
     public string? Style { get; set; }
-    
+
     [Parameter]
     public string? Class { get; set; }
 

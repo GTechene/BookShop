@@ -18,6 +18,8 @@ public class PriceController : ControllerBase {
     [HttpGet]
     public PriceResponse GetPrice([FromQuery] PriceRequest request)
     {
+        // TODO : since parsing an ISBN throws an exception, if the user provide many invalid ISBN the controller will only fail on the first one. 
+        // TODO : add a "ISBN.ParseMany" method ?
         var cart = Cart.Empty
             .Add(request.Books.Select(ISBN.Parse).ToArray());
 

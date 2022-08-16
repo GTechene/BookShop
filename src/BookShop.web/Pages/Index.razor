@@ -25,7 +25,7 @@
     {
         return _selectedBooks.Count(b => b.ISBN == book.ISBN) < book.Quantity;
     }
-    
+
     private void RemoveBook(string isbn)
     {
         var book = _selectedBooks.First(book => book.ISBN == isbn);

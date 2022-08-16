@@ -5,5 +5,5 @@ namespace BookShop.domain.Checkout;
 
 public record Receipt(
     ReceiptId Id,
-    IReadOnlyCollection<(Book Book, Quantity Quantity)> Books,
+    IReadOnlyCollection<(BookReference Book, Quantity Quantity)> Books,
     Price Price);
