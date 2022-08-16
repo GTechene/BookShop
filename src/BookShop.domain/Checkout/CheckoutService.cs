@@ -51,7 +51,7 @@ public class CheckoutService
 
         SaveTransaction(id, checkout.Cart, checkout.Price);
 
-        RemoveBooks(books);
+        RemoveCopiesOfBooks(books);
 
         _catalogLock.UnLock();
 
@@ -60,9 +60,9 @@ public class CheckoutService
             checkout.Price);
     }
 
-    private void RemoveBooks(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books)
+    private void RemoveCopiesOfBooks(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books)
     {
-        _inventoryManager.Remove(books);
+        _inventoryManager.RemoveCopiesOfBooks(books);
     }
 
     private void ProcessPayment(Payment.Payment checkoutPayment)

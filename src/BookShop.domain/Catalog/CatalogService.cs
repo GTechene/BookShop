@@ -24,11 +24,6 @@ public class CatalogService : IProvideCatalog
 
         return new Catalog(booksToReturn.ToList(), pages.Count);
     }
-
-    public BookReference Get(ISBN isbn)
-    {
-        return _bookMetadataProvider.Get(isbn);
-    }
 }
 
 public interface IProvideCatalog

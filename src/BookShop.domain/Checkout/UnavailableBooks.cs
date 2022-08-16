@@ -3,7 +3,8 @@ using BookShop.domain.Catalog;
 
 namespace BookShop.domain.Checkout;
 
-public class UnavailableBooks : Exception {
+public class UnavailableBooks : Exception
+{
     public UnavailableBooks(IReadOnlyCollection<(ISBN isbn, Book? Book)> books) : base(GenerateMessage(books)) {}
 
     private static string GenerateMessage(IReadOnlyCollection<(ISBN isbn, Book? Book)> books)

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BookShop.domain;
 using BookShop.domain.Catalog;
+using BookShop.domain.Checkout;
 
 namespace BookShop.infra;
 
@@ -11,33 +13,47 @@ public class InventoryRepository : IProvideInventory, IUpdateInventory, ILockCat
 {
     private readonly SemaphoreSlim _lock = new(1);
 
+    private Dictionary<ISBN, Quantity> _inventoryByISBN = new()
+    {
+        [ISBN.Parse("978-133888319-0")] = 20,
+        [ISBN.Parse("978-054534919-2")] = 12,
+        [ISBN.Parse("978-133888321-3")] = 12,
+        [ISBN.Parse("978-133888322-0")] = 12,
+        [ISBN.Parse("978-060637017-2")] = 5,
+        [ISBN.Parse("978-0545685368")] = 12
+    };
+
     public IEnumerable<Book> Get(IEnumerable<BookReference> bookReferences)
     {
-        //TODO : get data from DB
-        throw new NotImplementedException();
-    }
-
-    public void Remove(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books)
-    {
-        foreach (var (book, quantity) in books)
+        foreach (var bookReference in bookReferences)
         {
-            RemoveBook(book, quantity);
+            if (_inventoryByISBN.ContainsKey(bookReference.Id))
+            {
+                yield return new Book(bookReference, _inventoryByISBN[bookReference.Id]);
+            }
+
+            yield return new UnknownBook(bookReference.Id);
         }
     }
 
-    private void RemoveBook(BookReference book, Quantity quantity)
+    public void RemoveCopiesOfBooks(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books)
     {
-        var existingBook = Get(new List<BookReference>{book})
-            .Single(b => b.Reference.Id == book.Id);
-        var newBook = existingBook with
+        foreach (var (book, quantity) in books)
         {
-            Quantity = existingBook.Quantity - quantity
-        };
-        //TODO : insert new data into DB
+            RemoveCopy(book, quantity);
+        }
+    }
 
-        //var index = _books.IndexOf(existingBook);
-        //_books.Insert(index, newBook);
-        //_books.Remove(existingBook);
+    private void RemoveCopy(BookReference book, Quantity quantity)
+    {
+        if (_inventoryByISBN.ContainsKey(book.Id))
+        {
+            _inventoryByISBN[book.Id] -= quantity;
+        }
+        else
+        {
+            throw new UnknownBookInInventoryException(book.Id);
+        }
     }
 
     public void Lock()

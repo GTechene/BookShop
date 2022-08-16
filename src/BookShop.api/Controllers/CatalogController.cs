@@ -21,11 +21,12 @@ public class CatalogController : ControllerBase {
     {
         var catalog = _catalogService.Get(pageNumber, numberOfItemsPerPage);
         var booksToSend = catalog.Books
+            .Where(book => book is not UnknownBook)
             .Select(book => new BookResponse(
                 book.Reference.Id.ToString(),
                 book.Reference.Title,
                 book.Reference.Author,
-                book.Reference.PictureUrl.ToString(),
+                book.Reference.PictureUrl!.ToString(),
                 book.Quantity.Amount,
                 _bookPriceProvider.GetPrice(book.Reference.Id, currency)
             ));
