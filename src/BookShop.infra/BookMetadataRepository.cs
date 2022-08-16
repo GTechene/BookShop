@@ -3,9 +3,8 @@ using BookShop.domain.Catalog;
 
 namespace BookShop.infra;
 
-public class CatalogRepository : IProvideCatalog, ILockCatalog, IUpdateCatalog {
-
-    // ReSharper disable once IdentifierTypo
+public class BookMetadataRepository : IProvideBookMetadata
+{
     private static readonly BookReference TheDragonetProphecy = new(
         ISBN.Parse("978-133888319-0"),
         "The Dragonet Prophecy (Wings of Fire #1)",
@@ -49,52 +48,26 @@ public class CatalogRepository : IProvideCatalog, ILockCatalog, IUpdateCatalog {
             "https://s1.qwant.com/thumbr/0x380/9/9/683b67d0de9c96101174b7fda79181c3b581d8c38dad2ffeb97d9d9cbf496d/9781432874247.jpg?u=https%3A%2F%2Fi.thenile.io%2Fr1000%2F9781432874247.jpg%3Fr%3D5f1ae53b26fd2&q=0&b=1&p=0&a=0"));
 
     // TODO: maybe the book class should be renamed "BookStorageItem" ou "BookItem" and should be kept int the infra layer. Domain only requires a BookReference and a Quantity which can be achieved using a tuple. Book can also be misleading here. Is this really the physical book ? 
-    private readonly List<Book> _books = GetBooks().ToList();
+    private readonly List<BookReference> _books = GetBooks().ToList();
 
-    private readonly SemaphoreSlim _lock = new(1);
-
-    public void Lock()
+    
+    public List<BookReference> Get()
     {
-        _lock.Wait();
+        return _books;
     }
 
-    public void UnLock()
+    public BookReference? Get(ISBN isbn)
     {
-        _lock.Release();
-    }
-    public Catalog Get()
-    {
-        return new Catalog(_books);
+        return _books.SingleOrDefault(book => book.Id == isbn);
     }
 
-    public void Remove(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books)
+    private static IEnumerable<BookReference> GetBooks()
     {
-        foreach (var (book, quantity) in books)
-        {
-            RemoveBook(book, quantity);
-        }
-    }
-
-
-    private static IEnumerable<Book> GetBooks()
-    {
-        yield return new Book(TheDragonetProphecy, 30);
-        yield return new Book(TheLostHeir, 20);
-        yield return new Book(TheHiddenKingdom, 20);
-        yield return new Book(TheDarkSecret, 15);
-        yield return new Book(TheBrightestNight, 5);
-        yield return new Book(MoonRising, 6);
-    }
-
-    private void RemoveBook(BookReference book, Quantity quantity)
-    {
-        var existingBook = _books.Single(b => b.Reference.Id == book.Id);
-        var newBook = existingBook with
-        {
-            Quantity = existingBook.Quantity - quantity
-        };
-        var index = _books.IndexOf(existingBook);
-        _books.Insert(index, newBook);
-        _books.Remove(existingBook);
+        yield return TheDragonetProphecy;
+        yield return TheLostHeir;
+        yield return TheHiddenKingdom;
+        yield return TheDarkSecret;
+        yield return TheBrightestNight;
+        yield return MoonRising;
     }
 }

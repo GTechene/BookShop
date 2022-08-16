@@ -6,3 +6,5 @@ public record BookReference(
     string Author,
     Uri PictureUrl
 );
+
+public record UnknownBookReference(ISBN Id) : BookReference(Id, string.Empty, string.Empty, new Uri(string.Empty));

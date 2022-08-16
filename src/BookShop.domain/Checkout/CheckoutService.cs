@@ -6,31 +6,35 @@ using BookShop.domain.Pricing;
 namespace BookShop.domain.Checkout;
 
 // TODO : do we add a port interface here ?
-public class CheckoutService {
+public class CheckoutService
+{
     // TODO: Something feels wrong here. Maybe we should not directly reference the Catalog domain ?
 
     private readonly ILockCatalog _catalogLock;
-    private readonly IUpdateCatalog _catalogManager;
-    private readonly IProvideCatalog _catalogProvider;
+    private readonly IUpdateInventory _inventoryManager;
+    private readonly IProvideBookMetadata _bookMetadataProvider;
     private readonly IProcessPayment _paymentService;
 
     private readonly CartPricer _pricer;
     private readonly ILogTransaction _transactionLog;
+    private readonly IProvideInventory _inventoryProvider;
 
     public CheckoutService(
         CartPricer pricer,
-        IProvideCatalog catalogProvider,
-        IUpdateCatalog catalogManager,
+        IProvideBookMetadata bookMetadataProvider,
+        IUpdateInventory inventoryManager,
         ILockCatalog catalogLock,
         ILogTransaction transactionLog,
-        IProcessPayment paymentService)
+        IProcessPayment paymentService,
+        IProvideInventory inventoryProvider)
     {
         _pricer = pricer;
-        _catalogProvider = catalogProvider;
-        _catalogManager = catalogManager;
+        _bookMetadataProvider = bookMetadataProvider;
+        _inventoryManager = inventoryManager;
         _catalogLock = catalogLock;
         _transactionLog = transactionLog;
         _paymentService = paymentService;
+        _inventoryProvider = inventoryProvider;
     }
 
     public Receipt ProcessCheckout(Checkout checkout)
@@ -58,7 +62,7 @@ public class CheckoutService {
 
     private void RemoveBooks(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books)
     {
-        _catalogManager.Remove(books);
+        _inventoryManager.Remove(books);
     }
 
     private void ProcessPayment(Payment.Payment checkoutPayment)
@@ -76,28 +80,34 @@ public class CheckoutService {
         _transactionLog.Add(id, books, checkoutPrice);
     }
 
-    
+
     private IReadOnlyCollection<(BookReference Book, Quantity Quantity)> CheckBooksAreStillAvailable(Checkout checkout)
     {
-        var catalog = _catalogProvider.Get();
-        
         var books = new List<(BookReference Book, Quantity Quantity)>();
-        
+
         var unavailableBooks = new List<(ISBN isbn, Book? Book)>();
 
         foreach (var (isbn, count) in checkout.Cart
                      .GroupBy(isbn => isbn)
                      .ToDictionary(keySelector: group => group.Key, elementSelector: group => group.Count()))
         {
-            var book = catalog.Books.SingleOrDefault(book => book.Reference.Id == isbn);
+            var bookReference = _bookMetadataProvider.Get(isbn);
 
-            if (book is null || book.Quantity < count)
+            if (bookReference is null)
             {
-                unavailableBooks.Add((isbn, book));
+                unavailableBooks.Add((isbn, new UnknownBook(isbn)));
                 continue;
             }
 
-            books.Add((book.Reference, count));
+            var inventory = _inventoryProvider.Get(new List<BookReference> {bookReference}).Single();
+
+            if (inventory.Quantity < count)
+            {
+                unavailableBooks.Add((isbn, new Book(bookReference, inventory.Quantity)));
+                continue;
+            }
+
+            books.Add((bookReference, count));
         }
 
         if (unavailableBooks.Any())
@@ -116,7 +126,7 @@ public class CheckoutService {
         // For instance, if the pricing service creates a salted hash based on the book list and the price
         // Then when we checkout, we juste have to recalculate this hash with the same book list and price and make sure it has not changed
         // The goal here is to ensure that nobody request a price different from the one created by the pricer.
-        
+
         var (actualPrice, _) = _pricer.ComputePrice(checkout.Cart, checkout.Price.Currency);
 
         if (checkout.Price != actualPrice)

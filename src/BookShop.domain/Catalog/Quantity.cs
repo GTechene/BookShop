@@ -40,3 +40,5 @@ public record Quantity(int Amount) {
         return $"{Amount}";
     }
 }
+
+public record UnknownQuantity() : Quantity(-1);

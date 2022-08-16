@@ -22,12 +22,15 @@ builder.Services.AddScoped<IProvideBookPrice, BookPriceRepository>();
 builder.Services.AddScoped<IProvideDiscountDefinitions, DiscountDefinitionRepository>();
 
 
-builder.Services.AddSingleton<CatalogRepository>();
+builder.Services.AddSingleton<BookMetadataRepository>();
+builder.Services.AddTransient<IProvideBookMetadata>(services => services.GetRequiredService<BookMetadataRepository>());
 
-builder.Services.AddTransient<IProvideCatalog>(services => services.GetRequiredService<CatalogRepository>());
+builder.Services.AddSingleton<CatalogService>();
+builder.Services.AddTransient<IProvideCatalog>(services => services.GetRequiredService<CatalogService>());
 
-builder.Services.AddTransient<ILockCatalog>(services => services.GetRequiredService<CatalogRepository>());
-builder.Services.AddTransient<IUpdateCatalog>(services => services.GetRequiredService<CatalogRepository>());
+builder.Services.AddScoped<IProvideInventory, InventoryRepository>();
+builder.Services.AddTransient<ILockCatalog>(services => services.GetRequiredService<InventoryRepository>());
+builder.Services.AddTransient<IUpdateInventory>(services => services.GetRequiredService<InventoryRepository>());
 
 builder.Services.AddSingleton<ILogTransaction, TransactionLog>();
 

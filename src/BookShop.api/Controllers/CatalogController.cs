@@ -8,22 +8,19 @@ namespace BookShop.api.Controllers;
 [ApiController]
 public class CatalogController : ControllerBase {
     private readonly IProvideBookPrice _bookPriceProvider;
-    private readonly IProvideCatalog _catalogProvider;
+    private readonly IProvideCatalog _catalogService;
 
     public CatalogController(IProvideCatalog catalogProvider, IProvideBookPrice bookPriceProvider)
     {
-        _catalogProvider = catalogProvider;
+        _catalogService = catalogProvider;
         _bookPriceProvider = bookPriceProvider;
     }
 
     [HttpGet]
     public CatalogResponse GetCatalog(string currency, int pageNumber = 1, int numberOfItemsPerPage = 5)
     {
-        var catalog = _catalogProvider.Get();
-        // TODO : maybe this logic can be move in a CatalogService component ?
-        var pages = catalog.Books.Chunk(numberOfItemsPerPage).ToList();
-        var booksToSend = pages
-            .ElementAt(pageNumber - 1)
+        var catalog = _catalogService.Get(pageNumber, numberOfItemsPerPage);
+        var booksToSend = catalog.Books
             .Select(book => new BookResponse(
                 book.Reference.Id.ToString(),
                 book.Reference.Title,
@@ -35,7 +32,7 @@ public class CatalogController : ControllerBase {
 
         return new CatalogResponse(
             booksToSend.ToArray(),
-            pages.Count()
+            catalog.NumberOfPages
         );
     }
 
