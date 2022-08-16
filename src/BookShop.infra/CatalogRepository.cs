@@ -11,7 +11,7 @@ public class CatalogRepository : IProvideCatalog, ILockCatalog, IUpdateCatalog {
         "The Dragonet Prophecy (Wings of Fire #1)",
         "Tui T. Sutherland",
         new Uri(
-            "https://s2.qwant.com/thumbr/0x380/7/e/dd4e8783e856ec64127dc9f47f0dc6746c8fa6d56d6ce36e173818f4d4c3e7/latest.jpg?u=https%3A%2F%2Fvignette3.wikia.nocookie.net%2Fwingsoffire%2Fimages%2F6%2F62%2F11.jpg%2Frevision%2Flatest%3Fcb%3D20170614012225&q=0&b=1&p=0&a=0"));
+            "https://s2.qwant.com/thumbr/0x0/5/4/3dde4aa99ad8275bf403c085737594fefa3a0c6b011359b3133c455df2570e/.jpg?u=http%3A%2F%2Fwww.scholastic.ca%2Fhipoint%2F648%2F%3Fsrc%3D9780545349239.jpg%26w%3D260&q=0&b=1&p=0&a=0"));
 
     private static readonly BookReference TheLostHeir = new(
         ISBN.Parse("978-054534919-2"),
