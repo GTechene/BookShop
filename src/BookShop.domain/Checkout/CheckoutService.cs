@@ -85,7 +85,7 @@ public class CheckoutService
     {
         var books = new List<(BookReference Book, Quantity Quantity)>();
 
-        var unavailableBooks = new List<(ISBN isbn, Book? Book)>();
+        var unavailableBooks = new List<(ISBN isbn, Book Book)>();
 
         foreach (var (isbn, count) in checkout.Cart
                      .GroupBy(isbn => isbn)
@@ -93,7 +93,7 @@ public class CheckoutService
         {
             var bookReference = _bookMetadataProvider.Get(isbn);
 
-            if (bookReference is null)
+            if (bookReference is UnknownBookReference)
             {
                 unavailableBooks.Add((isbn, new UnknownBook(isbn)));
                 continue;

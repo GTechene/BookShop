@@ -2,5 +2,5 @@
 
 public interface IProvideBookMetadata {
     List<BookReference> Get();
-    BookReference? Get(ISBN isbn);
+    BookReference Get(ISBN isbn);
 }

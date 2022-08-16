@@ -56,9 +56,15 @@ public class BookMetadataRepository : IProvideBookMetadata
         return _books;
     }
 
-    public BookReference? Get(ISBN isbn)
+    public BookReference Get(ISBN isbn)
     {
-        return _books.SingleOrDefault(book => book.Id == isbn);
+        var result = _books.SingleOrDefault(book => book.Id == isbn);
+        if (result == null)
+        {
+            return new UnknownBookReference(isbn);
+        }
+
+        return result;
     }
 
     private static IEnumerable<BookReference> GetBooks()
