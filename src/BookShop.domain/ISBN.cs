@@ -18,7 +18,7 @@ public abstract record ISBN {
     /// </summary>
     /// <param name="isbn"></param>
     /// <returns>An instance of ISBN.ISBN10 or ISBN.ISBN13</returns>
-    /// <exception cref="InvalidIsbnException">Parse isbn is invalid</exception>
+    /// <exception cref="InvalidIsbn">Parse isbn is invalid</exception>
     public static ISBN Parse(string isbn)
     {
         var cleanedIsbn = Clean(isbn);
@@ -27,7 +27,7 @@ public abstract record ISBN {
         {
             10 => ISBN10.Parse(cleanedIsbn),
             13 => ISBN13.Parse(cleanedIsbn),
-            _ => throw new InvalidIsbnException("String is too short, only ISBN10 and ISBN13 are supported")
+            _ => throw new InvalidIsbn("String is too short, only ISBN10 and ISBN13 are supported")
         };
     }
 
@@ -38,7 +38,7 @@ public abstract record ISBN {
 
             if (cleanedIsbn.Length != 10)
             {
-                throw new InvalidIsbnException($"Expected ISBN with 10 digits. Actual : {isbn.Length}");
+                throw new InvalidIsbn($"Expected ISBN with 10 digits. Actual : {isbn.Length}");
             }
 
             var registrationGroup = ParseRegistrationGroup(cleanedIsbn);
@@ -57,7 +57,7 @@ public abstract record ISBN {
 
             if (!int.TryParse(checkDigitStr, out var checkDigit))
             {
-                throw new InvalidIsbnException($"Invalid CheckDigit : {checkDigitStr}. Expected : 1 digit.");
+                throw new InvalidIsbn($"Invalid CheckDigit : {checkDigitStr}. Expected : 1 digit.");
             }
 
             return checkDigit;
@@ -69,7 +69,7 @@ public abstract record ISBN {
 
             if (!int.TryParse(publicationStr, out var publication))
             {
-                throw new InvalidIsbnException($"Invalid Publication : {publicationStr}. Expected : 3 digits.");
+                throw new InvalidIsbn($"Invalid Publication : {publicationStr}. Expected : 3 digits.");
             }
 
             return publication;
@@ -81,7 +81,7 @@ public abstract record ISBN {
 
             if (!int.TryParse(registrantStr, out var registrant))
             {
-                throw new InvalidIsbnException($"Invalid Registrant : {registrantStr}. Expected : 4 digits.");
+                throw new InvalidIsbn($"Invalid Registrant : {registrantStr}. Expected : 4 digits.");
             }
 
             return registrant;
@@ -93,7 +93,7 @@ public abstract record ISBN {
 
             if (!int.TryParse(registrationGroupStr, out var registrationGroup))
             {
-                throw new InvalidIsbnException($"Invalid Registration group : {registrationGroupStr}. Expected : 2 digits.");
+                throw new InvalidIsbn($"Invalid Registration group : {registrationGroupStr}. Expected : 2 digits.");
             }
 
             return registrationGroup;
@@ -116,7 +116,7 @@ public abstract record ISBN {
 
             if (cleanedIsbn.Length != 13)
             {
-                throw new InvalidIsbnException($"Expected ISBN with 13 digits. Actual : {isbn.Length}");
+                throw new InvalidIsbn($"Expected ISBN with 13 digits. Actual : {isbn.Length}");
             }
 
             var gs1Prefix = ParseGs1Prefix(cleanedIsbn);
@@ -136,7 +136,7 @@ public abstract record ISBN {
 
             if (!int.TryParse(checkDigitStr, out var checkDigit))
             {
-                throw new InvalidIsbnException($"Invalid CheckDigit : {checkDigitStr}. Expected : 1 digit.");
+                throw new InvalidIsbn($"Invalid CheckDigit : {checkDigitStr}. Expected : 1 digit.");
             }
 
             return checkDigit;
@@ -148,7 +148,7 @@ public abstract record ISBN {
 
             if (!int.TryParse(publicationStr, out var publication))
             {
-                throw new InvalidIsbnException($"Invalid Publication : {publicationStr}. Expected : 3 digits.");
+                throw new InvalidIsbn($"Invalid Publication : {publicationStr}. Expected : 3 digits.");
             }
 
             return publication;
@@ -160,7 +160,7 @@ public abstract record ISBN {
 
             if (!int.TryParse(registrantStr, out var registrant))
             {
-                throw new InvalidIsbnException($"Invalid Registrant : {registrantStr}. Expected : 4 digits.");
+                throw new InvalidIsbn($"Invalid Registrant : {registrantStr}. Expected : 4 digits.");
             }
 
             return registrant;
@@ -172,7 +172,7 @@ public abstract record ISBN {
 
             if (!int.TryParse(registrationGroupStr, out var registrationGroup))
             {
-                throw new InvalidIsbnException($"Invalid Registration group : {registrationGroupStr}. Expected : 2 digits.");
+                throw new InvalidIsbn($"Invalid Registration group : {registrationGroupStr}. Expected : 2 digits.");
             }
 
             return registrationGroup;
@@ -184,12 +184,12 @@ public abstract record ISBN {
 
             if (!int.TryParse(gs1PrefixStr, out var gs1Prefix))
             {
-                throw new InvalidIsbnException($"Invalid Gs1 Prefix : {gs1PrefixStr}. Expected : 3 digits.");
+                throw new InvalidIsbn($"Invalid Gs1 Prefix : {gs1PrefixStr}. Expected : 3 digits.");
             }
 
             if (gs1Prefix is not 978 or 979)
             {
-                throw new InvalidIsbnException($"Invalid Gs1 Prefix : {gs1PrefixStr}. Only 978 and 979 are supported.");
+                throw new InvalidIsbn($"Invalid Gs1 Prefix : {gs1PrefixStr}. Only 978 and 979 are supported.");
             }
 
             return gs1Prefix;
@@ -204,7 +204,7 @@ public abstract record ISBN {
         }
     }
 
-    public class InvalidIsbnException : Exception {
-        public InvalidIsbnException(string message) : base(message) {}
+    public class InvalidIsbn : Exception {
+        public InvalidIsbn(string message) : base(message) {}
     }
 }

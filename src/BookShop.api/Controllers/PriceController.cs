@@ -18,6 +18,7 @@ public class PriceController : ControllerBase {
     [HttpGet]
     public PriceResponse GetPrice([FromQuery] PriceRequest request)
     {
+        
         // TODO : since parsing an ISBN throws an exception, if the user provide many invalid ISBN the controller will only fail on the first one. 
         // TODO : add a "ISBN.ParseMany" method ?
         var cart = Cart.Empty
@@ -32,5 +33,6 @@ public class PriceController : ControllerBase {
     }
 }
 
+// TODO : instead of providing the list of ISBN, repeating multiple times the same isbn, it feels more intuitive to provide a json like : { "ISBN" : quantity } which can be deserialized as a dictionary
 public record PriceRequest(string[] Books, string Currency);
 public record PriceResponse(Price Total, string[] Discounts);

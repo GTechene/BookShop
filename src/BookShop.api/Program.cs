@@ -57,7 +57,7 @@ app.UseExceptionHandler(exceptionHandlerApp => {
 
         switch (exception)
         {
-            case ISBN.InvalidIsbnException invalidIsbn:
+            case ISBN.InvalidIsbn invalidIsbn:
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await context.Response.WriteAsJsonAsync(ApiError.FromException(invalidIsbn));
                 break;

@@ -5,8 +5,10 @@ using BookShop.domain.Pricing;
 
 namespace BookShop.domain.Checkout;
 
+// TODO : do we add a port interface here ?
 public class CheckoutService {
     // TODO: Something feels wrong here. Maybe we should not directly reference the Catalog domain ?
+
     private readonly ILockCatalog _catalogLock;
     private readonly IUpdateCatalog _catalogManager;
     private readonly IProvideCatalog _catalogProvider;
@@ -80,7 +82,7 @@ public class CheckoutService {
         var catalog = _catalogProvider.Get();
         
         var books = new List<(BookReference Book, Quantity Quantity)>();
-
+        
         var unavailableBooks = new List<(ISBN isbn, Book? Book)>();
 
         foreach (var (isbn, count) in checkout.Cart
@@ -109,11 +111,11 @@ public class CheckoutService {
     private void CheckPrice(Checkout checkout)
     {
         // TODO: not the best way to do this.
-        // I don't like the fact that the Checkout Domin calls the Pricing domain
+        // I don't like the fact that the Checkout domain calls the Pricing domain
         // Maybe we can improve this using a hash or something
         // For instance, if the pricing service creates a salted hash based on the book list and the price
-        // Then when we checkout, we juste have to recalculate this hash with the same book list and price and make sure it has not change
-        // The goal here is to ensure that nobody request a price too low. 
+        // Then when we checkout, we juste have to recalculate this hash with the same book list and price and make sure it has not changed
+        // The goal here is to ensure that nobody request a price different from the one created by the pricer.
         
         var (actualPrice, _) = _pricer.ComputePrice(checkout.Cart, checkout.Price.Currency);
 

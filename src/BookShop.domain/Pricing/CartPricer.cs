@@ -3,6 +3,7 @@ using BookShop.domain.Pricing.Discounts;
 
 namespace BookShop.domain.Pricing;
 
+// TODO : do we add a port interface here ?
 public class CartPricer {
     private readonly IProvideBookPrice _bookPriceProvider;
     private readonly IProvideDiscountDefinitions _discountDefinitionsProvider;
@@ -15,6 +16,7 @@ public class CartPricer {
 
     public (Price, AppliedDiscounts) ComputePrice(Cart cart, string currency)
     {
+        // TODO : do we handle the price conversion here ?
         return FindBestPrice(cart, currency);
     }
 

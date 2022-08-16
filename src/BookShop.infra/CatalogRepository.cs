@@ -48,6 +48,7 @@ public class CatalogRepository : IProvideCatalog, ILockCatalog, IUpdateCatalog {
         new Uri(
             "https://s1.qwant.com/thumbr/0x380/9/9/683b67d0de9c96101174b7fda79181c3b581d8c38dad2ffeb97d9d9cbf496d/9781432874247.jpg?u=https%3A%2F%2Fi.thenile.io%2Fr1000%2F9781432874247.jpg%3Fr%3D5f1ae53b26fd2&q=0&b=1&p=0&a=0"));
 
+    // TODO: maybe the book class should be renamed "BookStorageItem" ou "BookItem" and should be kept int the infra layer. Domain only requires a BookReference and a Quantity which can be achieved using a tuple. Book can also be misleading here. Is this really the physical book ? 
     private readonly List<Book> _books = GetBooks().ToList();
 
     private readonly SemaphoreSlim _lock = new(1);
