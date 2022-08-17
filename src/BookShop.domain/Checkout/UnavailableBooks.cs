@@ -5,17 +5,17 @@ namespace BookShop.domain.Checkout;
 
 public class UnavailableBooks : Exception
 {
-    public UnavailableBooks(IReadOnlyCollection<(ISBN isbn, Book Book)> books) : base(GenerateMessage(books)) {}
+    public UnavailableBooks(IReadOnlyCollection<Book> books) : base(GenerateMessage(books)) {}
 
-    private static string GenerateMessage(IReadOnlyCollection<(ISBN isbn, Book Book)> books)
+    private static string GenerateMessage(IReadOnlyCollection<Book> books)
     {
         var sb = new StringBuilder("Books are no longer available : ");
 
-        foreach (var (isbn, book) in books)
+        foreach (var book in books)
         {
             if (book is UnknownBook)
             {
-                sb.AppendLine($" - Book with ISBN {isbn} is not in the catalog anymore.");
+                sb.AppendLine($" - Book with ISBN {book.Reference.Id} is not in the catalog anymore.");
             }
             else
             {

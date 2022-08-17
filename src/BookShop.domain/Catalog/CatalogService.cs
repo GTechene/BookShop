@@ -20,18 +20,11 @@ public class CatalogService : IProvideCatalog
             .ToList();
 
         var bookReferencesToReturn = pages.ElementAt(pageNumber - 1);
-        var booksToReturn = _inventoryProvider.Get(bookReferencesToReturn);
+        var books = _inventoryProvider.Get(bookReferencesToReturn);
 
-        return new Catalog(booksToReturn.ToList(), pages.Count);
+        //TODO : handle UnknownBooks here. If any, it means there's a discrepancy between the metadata referential and the inventory referential.
+        var knownBooks = books.Where(book => book is not UnknownBook).ToList();
+        
+        return new Catalog(knownBooks, pages.Count);
     }
-}
-
-public interface IProvideCatalog
-{
-    Catalog Get(int pageNumber, int numberOfItemsPerPage);
-}
-
-public interface IProvideInventory
-{
-    IEnumerable<Book> Get(IEnumerable<BookReference> bookReferences);
 }

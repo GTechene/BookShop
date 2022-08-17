@@ -7,7 +7,7 @@ public class InventoryRepository : IProvideInventory, IUpdateInventory, ILockCat
 {
     private readonly SemaphoreSlim _lock = new(1);
 
-    private Dictionary<ISBN, Quantity> _inventoryByISBN = new()
+    private readonly Dictionary<ISBN, Quantity> _inventoryByISBN = new()
     {
         [ISBN.Parse("978-133888319-0")] = 20,
         [ISBN.Parse("978-054534919-2")] = 12,
@@ -19,15 +19,17 @@ public class InventoryRepository : IProvideInventory, IUpdateInventory, ILockCat
 
     public IEnumerable<Book> Get(IEnumerable<BookReference> bookReferences)
     {
-        foreach (var bookReference in bookReferences)
-        {
-            if (_inventoryByISBN.ContainsKey(bookReference.Id))
-            {
-                yield return new Book(bookReference, _inventoryByISBN[bookReference.Id]);
-            }
+        return bookReferences.Select(Get);
+    }
 
-            yield return new UnknownBook(bookReference.Id);
+    public Book Get(BookReference bookReference)
+    {
+        if (_inventoryByISBN.ContainsKey(bookReference.Id))
+        {
+            return new Book(bookReference, _inventoryByISBN[bookReference.Id]);
         }
+
+        return new UnknownBook(bookReference.Id);
     }
 
     public void RemoveCopiesOfBooks(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books)

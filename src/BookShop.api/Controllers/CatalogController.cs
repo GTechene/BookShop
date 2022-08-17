@@ -20,8 +20,7 @@ public class CatalogController : ControllerBase {
     public CatalogResponse GetCatalog(string currency, int pageNumber = 1, int numberOfItemsPerPage = 5)
     {
         var catalog = _catalogService.Get(pageNumber, numberOfItemsPerPage);
-        var booksToSend = catalog.Books
-            .Where(book => book is not UnknownBook)
+        var books = catalog.Books
             .Select(book => new BookResponse(
                 book.Reference.Id.ToString(),
                 book.Reference.Title,
@@ -29,10 +28,11 @@ public class CatalogController : ControllerBase {
                 book.Reference.PictureUrl!.ToString(),
                 book.Quantity.Amount,
                 _bookPriceProvider.GetPrice(book.Reference.Id, currency)
-            ));
+            ))
+            .ToArray();
 
         return new CatalogResponse(
-            booksToSend.ToArray(),
+            books,
             catalog.NumberOfPages
         );
     }

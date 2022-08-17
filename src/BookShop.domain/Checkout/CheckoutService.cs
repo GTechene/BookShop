@@ -51,7 +51,7 @@ public class CheckoutService
 
         SaveTransaction(id, checkout.Cart, checkout.Price);
 
-        RemoveCopiesOfBooks(books);
+        RemoveCopiesOfBooksFromInventory(books);
 
         _catalogLock.UnLock();
 
@@ -60,7 +60,7 @@ public class CheckoutService
             checkout.Price);
     }
 
-    private void RemoveCopiesOfBooks(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books)
+    private void RemoveCopiesOfBooksFromInventory(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books)
     {
         _inventoryManager.RemoveCopiesOfBooks(books);
     }
@@ -85,7 +85,7 @@ public class CheckoutService
     {
         var books = new List<(BookReference Book, Quantity Quantity)>();
 
-        var unavailableBooks = new List<(ISBN isbn, Book Book)>();
+        var unavailableBooks = new List<Book>();
 
         foreach (var (isbn, count) in checkout.Cart
                      .GroupBy(isbn => isbn)
@@ -95,7 +95,7 @@ public class CheckoutService
 
             if (bookReference is UnknownBookReference)
             {
-                unavailableBooks.Add((isbn, new UnknownBook(isbn)));
+                unavailableBooks.Add(new UnknownBook(isbn));
                 continue;
             }
 
@@ -103,7 +103,7 @@ public class CheckoutService
 
             if (inventory.Quantity < count)
             {
-                unavailableBooks.Add((isbn, new Book(bookReference, inventory.Quantity)));
+                unavailableBooks.Add(new Book(bookReference, inventory.Quantity));
                 continue;
             }
 
