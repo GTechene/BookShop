@@ -2,12 +2,7 @@
 
 @if (CatalogToDisplay is null)
 {
-    <div class="w-100 text-secondary text-center">
-        <div class="spinner-grow spinner-grow-sm" role="status"></div>
-        <div class="spinner-grow spinner-grow-sm" role="status"></div>
-        <div class="spinner-grow spinner-grow-sm" role="status"></div>
-        <span class="sr-only">Loading...</span>
-    </div>
+    <Loading />
     return;
 }
 
@@ -17,7 +12,7 @@
 }
 @foreach (var book in CatalogToDisplay.Books)
 {
-    <Book
+    <CatalogItem
         BookToDisplay="@book"
         OnBookAdded="@SelectBook"
         CanBeSelected="@(CanSelectBook(book))"/>

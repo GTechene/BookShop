@@ -1,4 +1,8 @@
-﻿@inject PriceHttpClient PriceHttpClient 
+﻿@using System.Web
+@using BookShop.web.Pages
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Primitives
+@inject PriceHttpClient PriceHttpClient 
 
 <div class="card @Class" style="@Style">
     <div class="card-header">
@@ -7,20 +11,24 @@
 
     <div class="card-body px-0">
         <ul class="list-group list-group-flush">
-            @if (SelectedBooks.Count == 0)
+            @if (NoItems)
             {
                 <li class="list-group-item">Empty Cart</li>
             }
             else
             {
-                @foreach (var (title, count, isbn) in SelectedBooks.GroupBy(book => book.ISBN)
-                    .Select(group => (group.First().Title, group.Count(), group.Key))
+                @foreach (var (id, title, count) in Items
                     .OrderBy(t => t.Title))
                 {
                     <li class="list-group-item border-0">
                         <div class="d-flex flex-row">
                             <span class="flex-fill overflow-hidden"><span>@count</span>x @title</span>
-                            <button class="border-0 bg-transparent font-weight-bolder" @onclick="@(_ => OnBookRemoved.InvokeAsync(isbn))">❌</button>
+                            
+                            @if (OnItemRemoved.HasDelegate)
+                            {
+                                <button class="border-0 bg-transparent font-weight-bolder" @onclick="@(_ => OnItemRemoved.InvokeAsync(id))">❌</button>    
+                            }
+                            
                         </div>
                     </li>
                 }
@@ -52,18 +60,22 @@
             </div>
         }
     </div>
-
-
 </div>
 
 @code {
 
-    [Parameter]
-    public List<BookModel> SelectedBooks { get; set; } = null!;
+    public record Item(
+        string Id,
+        string Title,
+        int Quantity
+        );
 
     [Parameter]
-    public EventCallback<string> OnBookRemoved { get; set; }
+    public Item[] Items { get; set; } = null!;
 
+    [Parameter]
+    public EventCallback<string> OnItemRemoved { get; set; }
+    
     [Parameter]
     public string? Style { get; set; }
 
@@ -72,15 +84,15 @@
 
     private PriceDetails? Price { get; set; }
 
+    private bool NoItems => Items.Length == 0;
+
     protected override async Task OnParametersSetAsync()
     {
-        if (SelectedBooks.Count == 0)
+        if (NoItems)
         {
             return;
         }
 
-        var isbns = SelectedBooks.Select(book => book.ISBN).ToArray();
-        Price = await PriceHttpClient.GetCartPrice(isbns);
-    }
-
+        Price = await PriceHttpClient.GetCartPrice(Items.Select(item => item.Id).ToArray());
+    }   
 }

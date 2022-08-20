@@ -8,13 +8,35 @@
     </div>
 
     <div style="width:400px;min-height:350px;">
-        <Cart SelectedBooks="@_selectedBooks" OnBookRemoved="@RemoveBook" Style="position: sticky; top: 73px; z-index: 10;"/>
+        <div style="position: sticky; top: 73px; z-index: 10;">
+            <Cart Items="@CartItems" OnItemRemoved="@RemoveBook"/>
+
+            <div class="align-self-baseline text-center mt-3">
+                @if (CanCheckout)
+                {
+                    <a class="btn btn-lg btn-warning"
+                       href="@BuildCheckoutUri()">
+                        Checkout >
+                    </a>
+                }
+                else
+                {
+                    <button class="btn btn-lg btn-warning" disabled="disabled">
+                        Checkout >
+                    </button>
+                }
+            </div>
+
+        </div>
     </div>
 </div>
 
 
 @code {
     private readonly List<BookModel> _selectedBooks = new();
+
+    private Cart.Item[] CartItems => _selectedBooks.GroupBy(book => (book.ISBN, book.Title)).Select(group => new Cart.Item(group.Key.ISBN, group.Key.Title, group.Count())).ToArray();
+    private bool CanCheckout => CartItems.Length > 0;
 
     private void SelectBook(BookModel book)
     {
@@ -30,6 +52,12 @@
     {
         var book = _selectedBooks.First(book => book.ISBN == isbn);
         _selectedBooks.Remove(book);
+    }
+
+    private string BuildCheckoutUri()
+    {
+        return new Urls.Checkout(CartItems.Select(item => item.Id).ToArray())
+            .ToString();
     }
 
 }

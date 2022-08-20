@@ -1,0 +1,45 @@
+﻿@page "/checkout"
+
+@inject NavigationManager NavigationManager
+@inject CatalogHttpClient CatalogHttpClient
+
+<PageTitle>Checkout</PageTitle>
+
+<div class="d-flex flex-row">
+    <div class="flex-fill d-flex flex-column mx-3">
+        <CheckoutForm />
+    </div>
+
+    <div style="width:400px;min-height:350px;">
+        <Cart Items="@CartItems" Style="position: sticky; top: 73px; z-index: 10;"/>
+    </div>
+</div>
+
+@code {
+    private Cart.Item[] CartItems => _booksToCheckout?.Select(kvp => new Cart.Item(
+        kvp.Key.ISBN,
+        kvp.Key.Title,
+        kvp.Value))?.ToArray() ?? Array.Empty<Cart.Item>();  
+    
+    private Dictionary<BookReference, int>? _booksToCheckout;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Urls.Checkout.Parse(NavigationManager.ToAbsoluteUri(NavigationManager.Uri));
+
+        if (uri is null)
+        {
+            return;
+        }
+        
+        var getBookReferencesTasks =
+            uri.Books.GroupBy(id => id)
+                .Select(async group => {
+                    var reference = await CatalogHttpClient.GetBookReference(group.Key);
+                    return (Key: reference, Value: group.Count());
+                });
+
+        var bookReferences = await Task.WhenAll(getBookReferencesTasks);
+        _booksToCheckout = bookReferences.ToDictionary(t => t.Key!, t => t.Value);
+    }
+}

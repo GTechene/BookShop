@@ -1,4 +1,5 @@
-﻿using BookShop.domain.Catalog;
+﻿using BookShop.domain;
+using BookShop.domain.Catalog;
 using BookShop.domain.Prices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +10,13 @@ namespace BookShop.api.Controllers;
 public class CatalogController : ControllerBase {
     private readonly IProvideBookPrice _bookPriceProvider;
     private readonly IProvideCatalog _catalogService;
+    private readonly IProvideBookMetadata _bookMetadata;
 
-    public CatalogController(IProvideCatalog catalogProvider, IProvideBookPrice bookPriceProvider)
+    public CatalogController(IProvideCatalog catalogProvider, IProvideBookPrice bookPriceProvider, IProvideBookMetadata bookMetadata)
     {
         _catalogService = catalogProvider;
         _bookPriceProvider = bookPriceProvider;
+        _bookMetadata = bookMetadata;
     }
 
     [HttpGet]
@@ -40,4 +43,18 @@ public class CatalogController : ControllerBase {
     public record CatalogResponse(BookResponse[] Books, int TotalNumberOfPages);
 
     public record BookResponse(string ISBN, string Title, string Author, string PictureUrl, int Quantity, Price UnitPrice);
+
+    [HttpGet]
+    [Route("{isbn}")]
+    public BookReferenceResponse GetBookReference(string isbn)
+    {
+        var reference = _bookMetadata.Get(ISBN.Parse(isbn));
+
+        return new BookReferenceResponse(
+            reference.Id.ToString(),
+            reference.Title,
+            reference.PictureUrl?.ToString());
+    }
+
+    public record BookReferenceResponse(string ISBN, string Title, string? PictureUrl);
 }

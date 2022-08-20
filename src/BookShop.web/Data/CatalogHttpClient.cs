@@ -12,4 +12,10 @@ public class CatalogHttpClient {
     {
         return _httpClient.GetFromJsonAsync<Catalog>($"/api/Catalog?Currency=EUR&PageNumber={requestedPage}");
     }
+    
+    public Task<BookReference?> GetBookReference(string isbn)
+    {
+        return _httpClient.GetFromJsonAsync<BookReference>($"/api/Catalog/{isbn}");
+    }
+
 }
