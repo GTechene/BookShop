@@ -5,4 +5,8 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Data\countries.txt" />
+    </ItemGroup>
 </Project>

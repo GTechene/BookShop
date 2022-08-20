@@ -18,7 +18,7 @@ public class CheckoutController : ControllerBase {
     }
 
     [HttpPost]
-    public CheckoutProcessResponse ProcessCheckout(CheckoutRequest request)
+    public ReceiptResponse ProcessCheckout(CheckoutRequest request)
     {
         var cart = request.Books.Select(ISBN.Parse)
             .Aggregate(Cart.Empty, func: (cart, isbn) => cart.Add(isbn));
@@ -35,13 +35,23 @@ public class CheckoutController : ControllerBase {
             keySelector: tuple => tuple.Book.Id.ToString(),
             elementSelector: tuple => new PurchasedBookResponse(tuple.Book.Id.ToString(), tuple.Book.Title));
 
-        return new CheckoutProcessResponse(
+        return new ReceiptResponse(
             receipt.Id.ToString(),
             booksByQuantity,
             booksDetails);
     }
+
+    public record Card(
+        string Number,
+        DateTime ExpirationDate,
+        string Cvv,
+        string Name
+    );
     
-    public record PaymentRequest;
+    public record PaymentRequest(
+        Card card,
+        string PaymentHash
+    );
 
     public record CheckoutRequest(
         string[] Books,
@@ -52,7 +62,7 @@ public class CheckoutController : ControllerBase {
 
     public record PurchasedBookResponse(string ISBN, string Title);
 
-    public record CheckoutProcessResponse(
+    public record ReceiptResponse(
         string ReceiptId,
         Dictionary<string, int> PurchasedBooks,// ISBN/Quantity
         Dictionary<string, PurchasedBookResponse> Books);

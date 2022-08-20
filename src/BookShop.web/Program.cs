@@ -19,6 +19,12 @@ builder.Services.AddHttpClient<PriceHttpClient>(
         httpClient.BaseAddress = options.Value.Price.Uri;
     });
 
+builder.Services.AddHttpClient<CheckoutHttpClient>(
+    (serviceProvider, httpClient) => {
+        var options = serviceProvider.GetRequiredService<IOptions<BookShopApiOptions>>();
+        httpClient.BaseAddress = options.Value.Checkout.Uri;
+    });
+
 builder.Services.AddOptions<BookShopApiOptions>()
     .Bind(builder.Configuration.GetSection(BookShopApiOptions.SectionName))
     .ValidateDataAnnotations();
