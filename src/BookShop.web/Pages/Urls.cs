@@ -58,4 +58,34 @@ public static class Urls {
                 new Catalog(Array.Empty<string>());
         } 
     }
+    
+    public record Receipt(string ReceiptId) {
+        private const string Uri = "/receipt";
+        private const string ReceiptIdQueryParam = "receiptId";
+        
+        public override string ToString()
+        {
+            return QueryHelpers.AddQueryString(Uri, new[]
+            {
+                new KeyValuePair<string, StringValues>(ReceiptIdQueryParam, this.ReceiptId)
+            });
+        }
+
+        public static Receipt? Parse(Uri? uri)
+        {
+            if (uri is null || uri.LocalPath != Uri)
+            {
+                return null;
+            }
+            
+            var query = QueryHelpers.ParseQuery(uri.Query);
+
+            if (!query.TryGetValue(ReceiptIdQueryParam, out var receiptIdQueryString))
+            {
+                throw new InvalidOperationException("Missing receiptId parameter");
+            }
+                
+            return new Receipt(receiptIdQueryString);
+        } 
+    }
 }

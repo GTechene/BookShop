@@ -28,7 +28,9 @@ builder.Services.AddTransient<IProvideBookMetadata>(services => services.GetRequ
 builder.Services.AddSingleton<CatalogService>();
 builder.Services.AddTransient<IProvideCatalog>(services => services.GetRequiredService<CatalogService>());
 
-builder.Services.AddSingleton<IProvideInventory, InventoryRepository>();
+builder.Services.AddSingleton<InventoryRepository>();
+
+builder.Services.AddTransient<IProvideInventory>(services => services.GetRequiredService<InventoryRepository>());
 builder.Services.AddTransient<ILockCatalog>(services => services.GetRequiredService<InventoryRepository>());
 builder.Services.AddTransient<IUpdateInventory>(services => services.GetRequiredService<InventoryRepository>());
 

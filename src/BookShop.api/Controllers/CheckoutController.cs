@@ -18,53 +18,57 @@ public class CheckoutController : ControllerBase {
     }
 
     [HttpPost]
-    public ReceiptResponse ProcessCheckout(CheckoutRequest request)
+    public CheckoutResponse ProcessCheckout(CheckoutRequest request)
     {
         var cart = request.Books.Select(ISBN.Parse)
             .Aggregate(Cart.Empty, func: (cart, isbn) => cart.Add(isbn));
 
-        var checkout = new Checkout(cart, new Payment(), new Price(request.Price, request.Currency));
+        var checkout = new Checkout(cart, 
+            new Payment(), new Price(request.Price, request.Currency));
 
         var receipt = _checkoutService.ProcessCheckout(checkout);
 
-        var booksByQuantity = receipt.Books.ToDictionary(
-            keySelector: tuple => tuple.Book.Id.ToString(),
-            elementSelector: tuple => tuple.Quantity.Amount);
-
-        var booksDetails = receipt.Books.ToDictionary(
-            keySelector: tuple => tuple.Book.Id.ToString(),
-            elementSelector: tuple => new PurchasedBookResponse(tuple.Book.Id.ToString(), tuple.Book.Title));
-
-        return new ReceiptResponse(
-            receipt.Id.ToString(),
-            booksByQuantity,
-            booksDetails);
+        return new CheckoutResponse(
+            receipt.Id.ToString());
     }
 
     public record Card(
         string Number,
         DateTime ExpirationDate,
-        string Cvv,
-        string Name
+        string SecurityCode,
+        string OwnerName
     );
     
     public record PaymentRequest(
-        Card card,
+        Card Card,
         string PaymentHash
+    );
+    
+    public record Address(
+        string MainAddress,
+        string? AdditionalAddress,
+        string ZipCode,
+        string Country
+    );
+
+    public record Customer(
+        string FirstName,
+        string LastName,
+        string UserName,
+        string? Email,
+        Address BillingAddress,
+        Address? ShippingAddress
     );
 
     public record CheckoutRequest(
         string[] Books,
         decimal Price,
         string Currency,
+        Customer Customer,
         PaymentRequest Payment
     );
 
-    public record PurchasedBookResponse(string ISBN, string Title);
-
-    public record ReceiptResponse(
-        string ReceiptId,
-        Dictionary<string, int> PurchasedBooks,// ISBN/Quantity
-        Dictionary<string, PurchasedBookResponse> Books);
+    public record CheckoutResponse(
+        string ReceiptId);
 }
 

@@ -77,6 +77,9 @@
     public EventCallback<string> OnItemRemoved { get; set; }
     
     [Parameter]
+    public EventCallback<PriceModel> OnPriceComputed { get; set; }
+    
+    [Parameter]
     public string? Style { get; set; }
 
     [Parameter]
@@ -94,5 +97,10 @@
         }
 
         Price = await PriceHttpClient.GetCartPrice(Items.Select(item => item.Id).ToArray());
+        
+        if (Price is not null && OnPriceComputed.HasDelegate)
+        {
+            await OnPriceComputed.InvokeAsync(Price.Total);
+        }
     }   
 }

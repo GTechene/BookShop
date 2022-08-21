@@ -7,21 +7,26 @@ public class CheckoutHttpClient {
         _httpClient = httpClient;
     }
 
-
-    public async Task<string> Checkout(CheckoutRequest request)
+    public async Task<CheckoutResponse> Checkout(CheckoutRequest request)
     {
         var response = await _httpClient.PostAsync("/api/checkout", JsonContent.Create(request));
 
         response.EnsureSuccessStatusCode();
-        
-        return await response.Content.ReadFromJsonAsync<string>();
-    }
 
+        var checkoutResponse = await response.Content.ReadFromJsonAsync<CheckoutResponse>();
+
+        if (checkoutResponse is null)
+        {
+            throw new InvalidDataException("No payload returned by checkout api");
+        }
+        
+        return checkoutResponse;
+    }
 }
 
 public record Address(
     string MainAddress,
-    string AddionalAddress,
+    string? AdditionalAddress,
     string ZipCode,
     string Country
 );
@@ -35,11 +40,10 @@ public record Customer(
     string FirstName,
     string LastName,
     string UserName,
-    Address ShippingAddress
-) {
-    public Address? BillingAddress { get; init; }
-    public string? Email { get; init; }
-};
+    string? Email,
+    Address BillingAddress,
+    Address? ShippingAddress
+);
 
 public record CheckoutRequest(
     string[] Books,
@@ -48,3 +52,5 @@ public record CheckoutRequest(
     Customer Customer,
     PaymentRequest Payment
 );
+
+public record CheckoutResponse(string ReceiptId);

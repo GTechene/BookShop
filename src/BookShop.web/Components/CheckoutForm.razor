@@ -4,7 +4,7 @@
 
 <div>
     <h4 class="mb-3">Billing address</h4>
-    <EditForm Model="_model" class="needs-validation" OnValidSubmit="@SubmitCheckoutForm">
+    <EditForm Model="_formModel" class="needs-validation" OnValidSubmit="@SubmitCheckoutForm">
         <DataAnnotationsValidator/>
         <ValidationSummary/>
 
@@ -12,11 +12,11 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="firstName">First name</label>
-                    <InputText id="firstName" class="form-control" @bind-Value="_model.FirstName" required/>
+                    <InputText id="firstName" class="form-control" @bind-Value="_formModel.FirstName" required/>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="lastName">Last name</label>
-                    <InputText id="lastName" class="form-control" @bind-Value="_model.LastName" required/>
+                    <InputText id="lastName" class="form-control" @bind-Value="_formModel.LastName" required/>
                 </div>
             </div>
 
@@ -27,23 +27,23 @@
                         <span class="input-group-text">@@</span>
                     </div>
 
-                    <InputText id="username" class="form-control" @bind-Value="_model.UserName" required/>
+                    <InputText id="username" class="form-control" @bind-Value="_formModel.UserName" required/>
                 </div>
             </div>
 
             <div class="mb-3">
                 <label for="email">Email <span class="text-muted">(Optional)</span></label>
-                <InputText id="email" class="form-control" @bind-Value="_model.Email"/>
+                <InputText id="email" class="form-control" @bind-Value="_formModel.Email"/>
             </div>
 
             <div class="mb-3">
                 <label for="address">Address</label>
-                <InputText id="address" class="form-control" placeholder="1234 Main St" @bind-Value="_model.BillingAddress.Address" required/>
+                <InputText id="address" class="form-control" placeholder="1234 Main St" @bind-Value="_formModel.BillingAddress.Address" required/>
             </div>
 
             <div class="mb-3">
                 <label for="address2">Address 2<span class="text-muted">(Optional)</span></label>
-                <InputText id="address2" class="form-control" placeholder="Apartment or suite" @bind-Value="_model.BillingAddress.Address2"/>
+                <InputText id="address2" class="form-control" placeholder="Apartment or suite" @bind-Value="_formModel.BillingAddress.Address2"/>
             </div>
 
             <div class="row">
@@ -52,7 +52,7 @@
                     <InputSelect
                         id="country"
                         class="form-control"
-                        @bind-Value="_model.BillingAddress.Country" required>
+                        @bind-Value="_formModel.BillingAddress.Country" required>
                         <option value="">Select a Country</option>
 
                         @foreach (var country in Countries.All())
@@ -63,32 +63,32 @@
                 </div>
                 <div class="col-md-4 mb-3">
                     <label for="state">State (Optional)</label>
-                    <InputText id="state" class="form-control" @bind-Value="_model.BillingAddress.State"/>
+                    <InputText id="state" class="form-control" @bind-Value="_formModel.BillingAddress.State"/>
                 </div>
                 <div class="col-md-3 mb-3">
                     <label for="zip">Zip</label>
-                    <InputText id="zip" class="form-control" @bind-Value="_model.BillingAddress.ZipCode"/>
+                    <InputText id="zip" class="form-control" @bind-Value="_formModel.BillingAddress.ZipCode"/>
                 </div>
             </div>
             <hr class="mb-4">
             <div class="custom-control custom-checkbox">
-                <InputCheckbox id="same-address" @bind-Value="_model.SameAddressForShippingAsBilling"/>
+                <InputCheckbox id="same-address" @bind-Value="_formModel.SameAddressForShippingAsBilling"/>
                 <label class="custom-control-label" for="same-address">Shipping address is the same as my billing address</label>
             </div>
             <hr class="mb-4">
 
-            @if (!_model.SameAddressForShippingAsBilling)
+            @if (!_formModel.SameAddressForShippingAsBilling)
             {
                 <h4 class="mb-3">Shipping address</h4>
 
                 <div class="mb-3">
                     <label for="shipping-address">Address</label>
-                    <InputText id="shipping-address" class="form-control" placeholder="1234 Main St" @bind-Value="_model.ShippingAddress.Address" required/>
+                    <InputText id="shipping-address" class="form-control" placeholder="1234 Main St" @bind-Value="_formModel.ShippingAddress.Address" required/>
                 </div>
 
                 <div class="mb-3">
                     <label for="shipping-address2">Address 2<span class="text-muted">(Optional)</span></label>
-                    <InputText id="shipping-address2" class="form-control" placeholder="Apartment or suite" @bind-Value="_model.ShippingAddress.Address2"/>
+                    <InputText id="shipping-address2" class="form-control" placeholder="Apartment or suite" @bind-Value="_formModel.ShippingAddress.Address2"/>
                 </div>
 
                 <div class="row">
@@ -97,7 +97,7 @@
                         <InputSelect
                             id="shipping-country"
                             class="form-control"
-                            @bind-Value="_model.ShippingAddress.Country" required>
+                            @bind-Value="_formModel.ShippingAddress.Country" required>
                             <option value="">Select a Country</option>
 
                             @foreach (var country in Countries.All())
@@ -108,11 +108,11 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="shipping-state">State (Optional)</label>
-                        <InputText id="shipping-state" class="form-control" @bind-Value="_model.ShippingAddress.State"/>
+                        <InputText id="shipping-state" class="form-control" @bind-Value="_formModel.ShippingAddress.State"/>
                     </div>
                     <div class="col-md-3 mb-3">
                         <label for="shipping-zip">Zip</label>
-                        <InputText id="shipping-zip" class="form-control" @bind-Value="_model.ShippingAddress.ZipCode"/>
+                        <InputText id="shipping-zip" class="form-control" @bind-Value="_formModel.ShippingAddress.ZipCode"/>
                     </div>
                 </div>
 
@@ -122,6 +122,15 @@
         </div>
 
         <h4 class="mb-3">Payment</h4>
+
+        @if (_paymentErrorModel is not null)
+        {
+            <div class="row">
+                <div class="col-md-12 mb-3 text-danger border border-danger border-1">
+                    @_paymentErrorModel.ErrorMessage
+                </div>
+            </div>
+        }
 
         @if (_validation3ds2Model is not null)
         {
@@ -146,41 +155,46 @@
             <div class="row">
                 <div class="col-md-12 mb-3">
                     <label for="cc-number">Credit card number</label>
-                    <InputText id="cc-number" placeholder="XXXX XXXX XXXX XXXX" class="form-control" @bind-Value="_model.Card.Number"/>
+                    <InputText id="cc-number" placeholder="XXXX XXXX XXXX XXXX" class="form-control" @bind-Value="_formModel.Card.Number"/>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-3 mb-3">
                     <label for="cc-expiration">Expiration</label>
-                    <InputDate id="cc-expiration" class="form-control" type="@InputDateType.Month" @bind-Value="_model.Card.ExpirationDate" required/>
+                    <InputDate id="cc-expiration" class="form-control" type="@InputDateType.Month" @bind-Value="_formModel.Card.ExpirationDate" required/>
                 </div>
                 <div class="col-md-3 mb-3">
                     <label for="cc-security">CVV</label>
-                    <InputText id="cc-security" class="form-control" @bind-Value="_model.Card.SecurityCode" length="3" pattern="\d*"/>
+                    <InputText id="cc-security" class="form-control" @bind-Value="_formModel.Card.SecurityCode" length="3" pattern="\d*"/>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12 mb-3">
                     <label for="cc-name">Name on card</label>
-                    <InputText id="cc-name" class="form-control" @bind-Value="_model.Card.Name"/>
+                    <InputText id="cc-name" class="form-control" @bind-Value="_formModel.Card.Name"/>
                     <small class="text-muted">Full name as displayed on card</small>
                 </div>
             </div>
             <hr class="mb-4">
-            <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+            <button class="btn btn-primary btn-lg btn-block" type="submit" disabled="@(!CanCheckout)">Continue to checkout</button>
         }
     </EditForm>
 </div>
 
 @code {
-
     private Validation3DS2Model? _validation3ds2Model;
 
-    private CheckoutFormModel _model = new();
+    private CheckoutFormModel _formModel = new();
+
+    private ErrorModel? _paymentErrorModel;
 
     public class Validation3DS2Model {
         public string User { get; set; } = null!;
         public string Password { get; set; } = null!;
+    }
+
+    public class ErrorModel {
+        public string? ErrorMessage { get; init; }
     }
 
     public class CardModel {
@@ -213,19 +227,28 @@
 
         public CardModel Card { get; } = new();
     }
-
+    
     [Parameter]
-    public string[] SelectedBooks { get; set; } = null!;
+    public bool CanCheckout { get; set; }
+    
+    [Parameter]
+    public EventCallback<(CheckoutFormModel Model, string PaymentHash)> OnCheckout { get; set; }
 
     private async Task SubmitCheckoutForm()
     {
-        var card = new Card(_model.Card.Number.Replace(" ", ""), _model.Card.ExpirationDate, _model.Card.SecurityCode, _model.Card.Name);
+        if (_paymentErrorModel is not null)
+            _paymentErrorModel = null;
+
+        var card = new Card(_formModel.Card.Number.Replace(" ", ""), _formModel.Card.ExpirationDate, _formModel.Card.SecurityCode, _formModel.Card.Name);
         var cardAction = await CardHttpClient.GetCardAction(card);
 
         if (cardAction is CardAction.InvalidCard)
         {
-    // TODO : display an error
-            throw new Exception();
+            _paymentErrorModel = new ErrorModel
+            {
+                ErrorMessage = "Invalid Card"
+            };
+            return;
         }
 
         switch (cardAction.Type)
@@ -236,9 +259,7 @@
             case CardActionType.ValidateWith3DS2:
                 _validation3ds2Model = new Validation3DS2Model();
                 return;
-
-    // case CardActionType.ValidateWith3DS1:
-
+            case CardActionType.ValidateWith3DS1:
             default:
                 throw new NotImplementedException();
         }
@@ -252,7 +273,7 @@
             return;
         }
 
-        var card = new Card(_model.Card.Number.Replace(" ", ""), _model.Card.ExpirationDate, _model.Card.SecurityCode, _model.Card.Name);
+        var card = new Card(_formModel.Card.Number.Replace(" ", ""), _formModel.Card.ExpirationDate, _formModel.Card.SecurityCode, _formModel.Card.Name);
 
         var paymentHash = await CardHttpClient.Validate3DS2(card, _validation3ds2Model.User, _validation3ds2Model.Password);
 
@@ -266,8 +287,6 @@
 
     private async Task ProcessCheckout(string paymentHash)
     {
-        await Task.Yield();
+        await OnCheckout.InvokeAsync((Model:_formModel, PaymentHash:paymentHash));
     }
-
-
 }

@@ -2,44 +2,101 @@
 
 @inject NavigationManager NavigationManager
 @inject CatalogHttpClient CatalogHttpClient
+@inject CheckoutHttpClient CheckoutHttpClient
 
 <PageTitle>Checkout</PageTitle>
 
 <div class="d-flex flex-row">
     <div class="flex-fill d-flex flex-column mx-3">
-        <CheckoutForm />
+        <CheckoutForm OnCheckout="@OnCheckout" CanCheckout="@(Price is not null)" />
     </div>
 
     <div style="width:400px;min-height:350px;">
-        <Cart Items="@CartItems" Style="position: sticky; top: 73px; z-index: 10;"/>
+        <Cart Items="@CartItems" OnPriceComputed="@(price => Price = price)" Style="position: sticky; top: 73px; z-index: 10;"/>
     </div>
 </div>
 
 @code {
-    private Cart.Item[] CartItems => _booksToCheckout?.Select(kvp => new Cart.Item(
-        kvp.Key.ISBN,
-        kvp.Key.Title,
-        kvp.Value))?.ToArray() ?? Array.Empty<Cart.Item>();  
+    private Cart.Item[] CartItems => _cartItems ?? Array.Empty<Cart.Item>();
+    private Cart.Item[]? _cartItems;
     
-    private Dictionary<BookReference, int>? _booksToCheckout;
+    private Urls.Checkout? Url { get; set; }
+    
+    private PriceModel? Price { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var uri = Urls.Checkout.Parse(NavigationManager.ToAbsoluteUri(NavigationManager.Uri));
+        Url = Urls.Checkout.Parse(NavigationManager.ToAbsoluteUri(NavigationManager.Uri));
 
-        if (uri is null)
+        if (Url is null)
         {
             return;
         }
         
         var getBookReferencesTasks =
-            uri.Books.GroupBy(id => id)
+            Url.Books.GroupBy(id => id)
                 .Select(async group => {
                     var reference = await CatalogHttpClient.GetBookReference(group.Key);
-                    return (Key: reference, Value: group.Count());
+                    return new Cart.Item(
+                        reference!.ISBN,
+                        reference.Title,
+                        group.Count()
+                        );
                 });
 
-        var bookReferences = await Task.WhenAll(getBookReferencesTasks);
-        _booksToCheckout = bookReferences.ToDictionary(t => t.Key!, t => t.Value);
+        _cartItems = await Task.WhenAll(getBookReferencesTasks);
+    }
+    
+    private async Task OnCheckout((CheckoutForm.CheckoutFormModel Model, string PaymentHash) t)
+    {
+        if (Url is null || Price is null)
+        {
+            return;
+        }
+        
+        var (formModel, paymentHash) = t;
+        
+        var billingAddress = new Address(
+            formModel.BillingAddress.Address,
+            formModel.BillingAddress.Address2,
+            formModel.BillingAddress.ZipCode,
+            formModel.BillingAddress.Country
+            );
+
+        var shippingAddress = formModel.SameAddressForShippingAsBilling ?
+            billingAddress :
+            new Address(
+                formModel.ShippingAddress.Address,
+                formModel.ShippingAddress.Address2,
+                formModel.ShippingAddress.ZipCode,
+                formModel.ShippingAddress.Country
+                );
+
+        var customer = new Customer(
+            formModel.FirstName,
+            formModel.LastName,
+            formModel.UserName,
+            formModel.Email,
+            billingAddress,
+            shippingAddress);
+
+        var paymentRequest = new PaymentRequest(
+            new Card(formModel.Card.Number.Replace(" ", ""), formModel.Card.ExpirationDate, formModel.Card.SecurityCode, formModel.Card.Name),
+            paymentHash
+            );
+
+        var checkout = new CheckoutRequest(
+            Url.Books,
+            Price.Amount,
+            Price.Currency,
+            customer,
+            paymentRequest
+            );
+
+        var checkoutResponse = await CheckoutHttpClient.Checkout(checkout);
+
+        var receiptUrl = new Urls.Receipt(checkoutResponse.ReceiptId);
+        
+        NavigationManager.NavigateTo(receiptUrl.ToString());
     }
 }
