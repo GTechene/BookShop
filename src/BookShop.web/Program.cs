@@ -25,8 +25,18 @@ builder.Services.AddHttpClient<CheckoutHttpClient>(
         httpClient.BaseAddress = options.Value.Checkout.Uri;
     });
 
+builder.Services.AddHttpClient<CardHttpClient>(
+    (serviceProvider, httpClient) => {
+        var options = serviceProvider.GetRequiredService<IOptions<BookPalApiOptions>>();
+        httpClient.BaseAddress = options.Value.Uri;
+    });
+
 builder.Services.AddOptions<BookShopApiOptions>()
     .Bind(builder.Configuration.GetSection(BookShopApiOptions.SectionName))
+    .ValidateDataAnnotations();
+
+builder.Services.AddOptions<BookPalApiOptions>()
+    .Bind(builder.Configuration.GetSection(BookPalApiOptions.SectionName))
     .ValidateDataAnnotations();
 
 var app = builder.Build();

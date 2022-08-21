@@ -1,100 +1,58 @@
 ﻿@using System.ComponentModel.DataAnnotations
+
+@inject CardHttpClient CardHttpClient
+
 <div>
     <h4 class="mb-3">Billing address</h4>
-    <EditForm Model="_model" class="needs-validation" OnValidSubmit="@ProcessCheckout">
+    <EditForm Model="_model" class="needs-validation" OnValidSubmit="@SubmitCheckoutForm">
         <DataAnnotationsValidator/>
         <ValidationSummary/>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="firstName">First name</label>
-                @* <input type="text" class="form-control" id="firstName" placeholder="" value="" required> *@
-                <InputText id="firstName" class="form-control" @bind-Value="_model.FirstName" required/>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="lastName">Last name</label>
-                <InputText id="lastName" class="form-control" @bind-Value="_model.LastName" required/>
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="username">Username</label>
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">@@</span>
+        <div disabled="@(_validation3ds2Model is not null)">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="firstName">First name</label>
+                    <InputText id="firstName" class="form-control" @bind-Value="_model.FirstName" required/>
                 </div>
-
-                <InputText id="username" class="form-control" @bind-Value="_model.UserName" required/>
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="email">Email <span class="text-muted">(Optional)</span></label>
-            <InputText id="email" class="form-control" @bind-Value="_model.Email"/>
-        </div>
-
-        <div class="mb-3">
-            <label for="address">Address</label>
-            <InputText id="address" class="form-control" placeholder="1234 Main St" @bind-Value="_model.BillingAddress.Address" required/>
-        </div>
-
-        <div class="mb-3">
-            <label for="address2">Address 2<span class="text-muted">(Optional)</span></label>
-            <InputText id="address2" class="form-control" placeholder="Apartment or suite" @bind-Value="_model.BillingAddress.Address2"/>
-        </div>
-
-        <div class="row">
-            <div class="col-md-5 mb-3">
-                <label for="country">Country</label>
-                <InputSelect
-                    id="country"
-                    class="form-control"
-                    @bind-Value="_model.BillingAddress.Country" required>
-                    <option value="">Select a Country</option>
-
-                    @foreach (var country in Countries.All())
-                    {
-                        <option value="@country.Code">@country.Name</option>
-                    }
-                </InputSelect>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="state">State (Optional)</label>
-                <InputText id="state" class="form-control" @bind-Value="_model.BillingAddress.State"/>
-            </div>
-            <div class="col-md-3 mb-3">
-                <label for="zip">Zip</label>
-                <InputText id="zip" class="form-control" @bind-Value="_model.BillingAddress.ZipCode"/>
-            </div>
-        </div>
-        <hr class="mb-4">
-        <div class="custom-control custom-checkbox">
-            <InputCheckbox id="same-address" @bind-Value="_model.SameAddressForShippingAsBilling"/>
-            <label class="custom-control-label" for="same-address">Shipping address is the same as my billing address</label>
-        </div>
-        <hr class="mb-4">
-
-        @if (!_model.SameAddressForShippingAsBilling)
-        {
-            <h4 class="mb-3">Shipping address</h4>
-
-            <div class="mb-3">
-                <label for="shipping-address">Address</label>
-                <InputText id="shipping-address" class="form-control" placeholder="1234 Main St" @bind-Value="_model.ShippingAddress.Address" required/>
+                <div class="col-md-6 mb-3">
+                    <label for="lastName">Last name</label>
+                    <InputText id="lastName" class="form-control" @bind-Value="_model.LastName" required/>
+                </div>
             </div>
 
             <div class="mb-3">
-                <label for="shipping-address2">Address 2<span class="text-muted">(Optional)</span></label>
-                <InputText id="shipping-address2" class="form-control" placeholder="Apartment or suite" @bind-Value="_model.ShippingAddress.Address2"/>
+                <label for="username">Username</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">@@</span>
+                    </div>
+
+                    <InputText id="username" class="form-control" @bind-Value="_model.UserName" required/>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="email">Email <span class="text-muted">(Optional)</span></label>
+                <InputText id="email" class="form-control" @bind-Value="_model.Email"/>
+            </div>
+
+            <div class="mb-3">
+                <label for="address">Address</label>
+                <InputText id="address" class="form-control" placeholder="1234 Main St" @bind-Value="_model.BillingAddress.Address" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="address2">Address 2<span class="text-muted">(Optional)</span></label>
+                <InputText id="address2" class="form-control" placeholder="Apartment or suite" @bind-Value="_model.BillingAddress.Address2"/>
             </div>
 
             <div class="row">
                 <div class="col-md-5 mb-3">
-                    <label for="shipping-country">Country</label>
+                    <label for="country">Country</label>
                     <InputSelect
-                        id="shipping-country"
+                        id="country"
                         class="form-control"
-                        @bind-Value="_model.ShippingAddress.Country" required>
+                        @bind-Value="_model.BillingAddress.Country" required>
                         <option value="">Select a Country</option>
 
                         @foreach (var country in Countries.All())
@@ -104,56 +62,131 @@
                     </InputSelect>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label for="shipping-state">State (Optional)</label>
-                    <InputText id="shipping-state" class="form-control" @bind-Value="_model.ShippingAddress.State"/>
+                    <label for="state">State (Optional)</label>
+                    <InputText id="state" class="form-control" @bind-Value="_model.BillingAddress.State"/>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <label for="shipping-zip">Zip</label>
-                    <InputText id="shipping-zip" class="form-control" @bind-Value="_model.ShippingAddress.ZipCode"/>
+                    <label for="zip">Zip</label>
+                    <InputText id="zip" class="form-control" @bind-Value="_model.BillingAddress.ZipCode"/>
+                </div>
+            </div>
+            <hr class="mb-4">
+            <div class="custom-control custom-checkbox">
+                <InputCheckbox id="same-address" @bind-Value="_model.SameAddressForShippingAsBilling"/>
+                <label class="custom-control-label" for="same-address">Shipping address is the same as my billing address</label>
+            </div>
+            <hr class="mb-4">
+
+            @if (!_model.SameAddressForShippingAsBilling)
+            {
+                <h4 class="mb-3">Shipping address</h4>
+
+                <div class="mb-3">
+                    <label for="shipping-address">Address</label>
+                    <InputText id="shipping-address" class="form-control" placeholder="1234 Main St" @bind-Value="_model.ShippingAddress.Address" required/>
+                </div>
+
+                <div class="mb-3">
+                    <label for="shipping-address2">Address 2<span class="text-muted">(Optional)</span></label>
+                    <InputText id="shipping-address2" class="form-control" placeholder="Apartment or suite" @bind-Value="_model.ShippingAddress.Address2"/>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-5 mb-3">
+                        <label for="shipping-country">Country</label>
+                        <InputSelect
+                            id="shipping-country"
+                            class="form-control"
+                            @bind-Value="_model.ShippingAddress.Country" required>
+                            <option value="">Select a Country</option>
+
+                            @foreach (var country in Countries.All())
+                            {
+                                <option value="@country.Code">@country.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="shipping-state">State (Optional)</label>
+                        <InputText id="shipping-state" class="form-control" @bind-Value="_model.ShippingAddress.State"/>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="shipping-zip">Zip</label>
+                        <InputText id="shipping-zip" class="form-control" @bind-Value="_model.ShippingAddress.ZipCode"/>
+                    </div>
+                </div>
+
+                <hr class="mb-4">
+            }
+
+        </div>
+
+        <h4 class="mb-3">Payment</h4>
+
+        @if (_validation3ds2Model is not null)
+        {
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="user-3ds2">User</label>
+                    <InputText id="user-3ds2" class="form-control" @bind-Value="_validation3ds2Model.User"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="password-3ds2">Password</label>
+                    <InputText id="password-3ds2" class="form-control" type="password" @bind-Value="_validation3ds2Model.Password"/>
                 </div>
             </div>
 
             <hr class="mb-4">
+            <button class="btn btn-primary btn-lg btn-block" @onclick="@Validate3DS2">Validate</button>
         }
-
-        <h4 class="mb-3">Payment</h4>
-
-        <div class="row">
-            <div class="col-md-12 mb-3">
-                <label for="cc-number">Credit card number</label>
-                <InputText id="cc-number" placeholder="XXXX XXXX XXXX XXXX" class="form-control" @bind-Value="_model.Card.Number"/>
+        else
+        {
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="cc-number">Credit card number</label>
+                    <InputText id="cc-number" placeholder="XXXX XXXX XXXX XXXX" class="form-control" @bind-Value="_model.Card.Number"/>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3 mb-3">
-                <label for="cc-expiration">Expiration</label>
-                <InputDate id="cc-expiration" class="form-control" type="@InputDateType.Month" @bind-Value="_model.Card.ExpirationDate" required/>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="cc-expiration">Expiration</label>
+                    <InputDate id="cc-expiration" class="form-control" type="@InputDateType.Month" @bind-Value="_model.Card.ExpirationDate" required/>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="cc-security">CVV</label>
+                    <InputText id="cc-security" class="form-control" @bind-Value="_model.Card.SecurityCode" length="3" pattern="\d*"/>
+                </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <label for="cc-security">CVV</label>
-                <InputText id="cc-security" class="form-control" @bind-Value="_model.Card.SecurityCode" length="3" pattern="\d*"/>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="cc-name">Name on card</label>
+                    <InputText id="cc-name" class="form-control" @bind-Value="_model.Card.Name"/>
+                    <small class="text-muted">Full name as displayed on card</small>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 mb-3">
-                <label for="cc-name">Name on card</label>
-                <InputText id="cc-name" class="form-control" @bind-Value="_model.Card.Name"/>
-                <small class="text-muted">Full name as displayed on card</small>
-            </div>
-        </div>
-        <hr class="mb-4">
-        <button class="btn btn-primary btn-lg btn-block" @onclick="@ProcessCheckout">Continue to checkout</button>
+            <hr class="mb-4">
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+        }
     </EditForm>
 </div>
 
 @code {
 
+    private Validation3DS2Model? _validation3ds2Model;
+
     private CheckoutFormModel _model = new();
+
+    public class Validation3DS2Model {
+        public string User { get; set; } = null!;
+        public string Password { get; set; } = null!;
+    }
 
     public class CardModel {
         public string Number { get; set; } = null!;
         public string Name { get; set; } = null!;
-        public DateTime ExpirationDate { get; set; }
+        public DateTime ExpirationDate { get; set; } = DateTime.Today.AddMonths(6);
         public string SecurityCode { get; set; } = null!;
     }
 
@@ -184,14 +217,57 @@
     [Parameter]
     public string[] SelectedBooks { get; set; } = null!;
 
-    private void ProcessCheckout(object plop)
+    private async Task SubmitCheckoutForm()
     {
-    // 1. check 3DS1 - 3DS2
+        var card = new Card(_model.Card.Number.Replace(" ", ""), _model.Card.ExpirationDate, _model.Card.SecurityCode, _model.Card.Name);
+        var cardAction = await CardHttpClient.GetCardAction(card);
 
-    // 2. ask for code (3ds1 or 3ds2)
+        if (cardAction is CardAction.InvalidCard)
+        {
+    // TODO : display an error
+            throw new Exception();
+        }
 
-    // 3. validate payment
+        switch (cardAction.Type)
+        {
+            case CardActionType.NoValidationRequired when cardAction.PaymentHash is not null:
+                await ProcessCheckout(cardAction.PaymentHash);
+                return;
+            case CardActionType.ValidateWith3DS2:
+                _validation3ds2Model = new Validation3DS2Model();
+                return;
 
-    // 4. process checkout
+    // case CardActionType.ValidateWith3DS1:
+
+            default:
+                throw new NotImplementedException();
+        }
+
     }
+
+    private async Task Validate3DS2()
+    {
+        if (_validation3ds2Model is null)
+        {
+            return;
+        }
+
+        var card = new Card(_model.Card.Number.Replace(" ", ""), _model.Card.ExpirationDate, _model.Card.SecurityCode, _model.Card.Name);
+
+        var paymentHash = await CardHttpClient.Validate3DS2(card, _validation3ds2Model.User, _validation3ds2Model.Password);
+
+        if (paymentHash is null)
+        {
+            return;
+        }
+
+        await ProcessCheckout(paymentHash);
+    }
+
+    private async Task ProcessCheckout(string paymentHash)
+    {
+        await Task.Yield();
+    }
+
+
 }

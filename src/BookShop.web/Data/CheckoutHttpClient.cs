@@ -26,6 +26,10 @@ public record Address(
     string Country
 );
 
+public record PaymentRequest(
+    Card Card,
+    string PaymentHash
+);
 
 public record Customer(
     string FirstName,
@@ -36,19 +40,6 @@ public record Customer(
     public Address? BillingAddress { get; init; }
     public string? Email { get; init; }
 };
-
-public record Card(
-    string Number,
-    DateTime ExpirationDate,
-    string SecurityCode,
-    string Name
-);
-
-
-public record PaymentRequest(
-    Card Card,
-    string PaymentHash
-);
 
 public record CheckoutRequest(
     string[] Books,
