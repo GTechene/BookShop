@@ -11,18 +11,18 @@ public class CardHttpClient {
         _httpClient = httpClient;
     }
 
-    public async Task<CardAction> GetCardAction(Card card)
+    public async Task<CardValidation> GetCardAction(Card card)
     {
-        var response = await _httpClient.PostAsync("/api/Bank/card", JsonContent.Create(card));
+        var response = await _httpClient.PostAsync("/api/Payment/card/validation", JsonContent.Create(card));
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
-            return new CardAction.InvalidCard(card);
+            return new CardValidation.InvalidCard(card);
         }
 
         response.EnsureSuccessStatusCode();
 
-        var action = await response.Content.ReadFromJsonAsync<CardAction>();
+        var action = await response.Content.ReadFromJsonAsync<CardValidation>();
 
         if (action is null)
         {
@@ -35,7 +35,7 @@ public class CardHttpClient {
     
     public async Task<string?> Validate3DS2(Card card, string user, string password)
     {
-        var response = await _httpClient.PostAsync("/api/Bank/card/3ds2", JsonContent.Create(new
+        var response = await _httpClient.PostAsync("/api/Payment/card/3ds2", JsonContent.Create(new
         {
             Card = card,
             User = user,
@@ -51,18 +51,18 @@ public class CardHttpClient {
     }
 }
 
-public record CardAction(
+public record CardValidation(
     [property:JsonConverter(typeof(JsonStringEnumConverter))]
-    CardActionType Type, 
+    CardValidationType Type, 
     string? WebSiteUrl, 
     string? PaymentHash) {
-    public record InvalidCard(Card Card) : CardAction(CardActionType.NoValidationRequired, null, null);
+    public record InvalidCard(Card Card) : CardValidation(CardValidationType.None, null, null);
 };
 
-public enum CardActionType {
-    NoValidationRequired, 
+public enum CardValidationType {
+    None, 
     // ReSharper disable once InconsistentNaming
-    ValidateWith3DS1,
+    With3DS1,
     // ReSharper disable once InconsistentNaming
-    ValidateWith3DS2    
+    With3DS2    
 }

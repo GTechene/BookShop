@@ -12,7 +12,14 @@
                 <p class="card-text">
                     Author:&nbsp;<b>@BookToDisplay.Author</b>
                 </p>
-                @if (BookToDisplay.Quantity <= 5)
+                
+                @if (BookToDisplay.Quantity == 0)
+                {
+                    <p class="card-text text-secondary">
+                        <i>We're sorry, this article is out of stock</i>
+                    </p>
+                }
+                else if (BookToDisplay.Quantity <= 5)
                 {
                     <p class="card-text text-danger">
                         <i>⚠ Only <b>@BookToDisplay.Quantity</b> left in stock ! ⚠</i>
@@ -25,7 +32,10 @@
                     </p>
                 }
                 <Price Value="@BookToDisplay.UnitPrice" Class="card-text"/>
-                <button class="btn btn-primary mt-3" disabled="@Disabled" @onclick="@(_ => OnBookAdded.InvokeAsync(BookToDisplay))">Add to Cart ></button>
+                @if (BookToDisplay.Quantity > 0)
+                {
+                    <button class="btn btn-primary mt-3" disabled="@Disabled" @onclick="@(_ => OnBookAdded.InvokeAsync(BookToDisplay))">Add to Cart ></button>
+                }
             </div>
         </div>
     </div>

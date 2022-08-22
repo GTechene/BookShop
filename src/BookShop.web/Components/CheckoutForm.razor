@@ -1,6 +1,12 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using BookShop.web.Pages
 
 @inject CardHttpClient CardHttpClient
+
+@if (_formModel is null)
+{
+    return;
+}
 
 <div>
     <h4 class="mb-3">Billing address</h4>
@@ -184,7 +190,7 @@
 @code {
     private Validation3DS2Model? _validation3ds2Model;
 
-    private CheckoutFormModel _formModel = new();
+    private CheckoutFormModel? _formModel;
 
     private ErrorModel? _paymentErrorModel;
 
@@ -222,27 +228,84 @@
         public string? Email { get; set; }
 
         public bool SameAddressForShippingAsBilling { get; set; } = true;
-        public AddressModel BillingAddress { get; } = new();
-        public AddressModel ShippingAddress { get; } = new();
+        public AddressModel BillingAddress { get; init; } = null!;
+        public AddressModel ShippingAddress { get; init; } = null!;
 
         public CardModel Card { get; } = new();
     }
-    
+
+    [Parameter]
+    public Urls.Checkout Url { get; set; } = null!;
+
     [Parameter]
     public bool CanCheckout { get; set; }
-    
+
     [Parameter]
     public EventCallback<(CheckoutFormModel Model, string PaymentHash)> OnCheckout { get; set; }
 
+    [Parameter]
+    public EventCallback<(CheckoutFormModel Model, string Uri)> OnRedirect { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _formModel = new CheckoutFormModel
+        {
+            FirstName = Url.FirstName ?? string.Empty,
+            LastName = Url.LastName ?? string.Empty,
+            UserName = Url.UserName ?? string.Empty,
+            Email = Url.Email,
+            BillingAddress = new AddressModel
+            {
+                Address = Url.BillingAddress ?? string.Empty,
+                Address2 = Url.BillingAddress2 ?? string.Empty,
+                Country = Url.BillingCountry ?? string.Empty,
+                State = Url.BillingState,
+                ZipCode = Url.BillingZipCode ?? string.Empty,
+            },
+            ShippingAddress = new AddressModel
+            {
+                Address = Url.ShippingAddress ?? string.Empty,
+                Address2 = Url.ShippingAddress ?? string.Empty,
+                Country = Url.ShippingAddress ?? string.Empty,
+                State = Url.ShippingAddress,
+                ZipCode = Url.ShippingAddress ?? string.Empty,
+            },
+        };
+
+        if (Url.Redirected != true)
+        {
+            return;
+        }
+
+        if (Url.PaymentHash is null)
+        {
+            _paymentErrorModel = new ErrorModel
+            {
+                ErrorMessage = "Payment refused"
+            };
+        }
+
+        if (Url.PaymentHash is not null)
+        {
+            await ProcessCheckout(Url.PaymentHash);
+        }
+    }
+
+
     private async Task SubmitCheckoutForm()
     {
+        if (_formModel is null)
+        {
+            return;
+        }
+
         if (_paymentErrorModel is not null)
             _paymentErrorModel = null;
 
         var card = new Card(_formModel.Card.Number.Replace(" ", ""), _formModel.Card.ExpirationDate, _formModel.Card.SecurityCode, _formModel.Card.Name);
         var cardAction = await CardHttpClient.GetCardAction(card);
 
-        if (cardAction is CardAction.InvalidCard)
+        if (cardAction is CardValidation.InvalidCard)
         {
             _paymentErrorModel = new ErrorModel
             {
@@ -253,13 +316,15 @@
 
         switch (cardAction.Type)
         {
-            case CardActionType.NoValidationRequired when cardAction.PaymentHash is not null:
+            case CardValidationType.None when cardAction.PaymentHash is not null:
                 await ProcessCheckout(cardAction.PaymentHash);
                 return;
-            case CardActionType.ValidateWith3DS2:
+            case CardValidationType.With3DS2:
                 _validation3ds2Model = new Validation3DS2Model();
                 return;
-            case CardActionType.ValidateWith3DS1:
+            case CardValidationType.With3DS1:
+                await OnRedirect.InvokeAsync((_formModel, cardAction.WebSiteUrl)!);
+                return;
             default:
                 throw new NotImplementedException();
         }
@@ -268,7 +333,7 @@
 
     private async Task Validate3DS2()
     {
-        if (_validation3ds2Model is null)
+        if (_validation3ds2Model is null || _formModel is null)
         {
             return;
         }
@@ -287,6 +352,11 @@
 
     private async Task ProcessCheckout(string paymentHash)
     {
+        if (_formModel is null)
+        {
+            return;
+        }
+
         await OnCheckout.InvokeAsync((Model:_formModel, PaymentHash:paymentHash));
     }
 }

@@ -1,7 +1,8 @@
 using System.Net.Mime;
 using System.Text.Json.Serialization;
 using BookPal;
-using BookPal.Controllers;
+using BookPal.Model;
+using BookPal.Services;
 using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,18 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
+
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options => 
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
+builder.Services.AddRazorPages();
+
+builder.Services.AddScoped<HashGenerator>();
+builder.Services.AddScoped<CardValidationService>();
 
 builder.Services.AddOptions<HashOptions>()
     .Bind(builder.Configuration.GetSection(HashOptions.SectionName))
@@ -44,7 +57,7 @@ app.UseExceptionHandler(exceptionHandlerApp => {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await context.Response.WriteAsJsonAsync(ApiError.FromException(invalidCard));
                 break;
-            case Invalid3DS2Credentials invalidCredentials:
+            case ValidationUsing3DS2Rejected invalidCredentials:
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await context.Response.WriteAsJsonAsync(ApiError.FromException(invalidCredentials));
                 break;
@@ -62,5 +75,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 app.Run();

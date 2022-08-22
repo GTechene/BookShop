@@ -2,7 +2,7 @@
 @using BookShop.web.Pages
 @using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.Extensions.Primitives
-@inject PriceHttpClient PriceHttpClient 
+@using System.Collections
 
 <div class="card @Class" style="@Style">
     <div class="card-header">
@@ -64,6 +64,56 @@
 
 @code {
 
+    public class ItemsList : IEnumerable<Item>, IEquatable<ItemsList> {
+        private readonly List<Item> _items;
+
+        private ItemsList(List<Item> items)
+        {
+            _items = items;
+        } 
+        
+        public IEnumerator<Item> GetEnumerator()
+        {
+            return _items.GetEnumerator();
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        
+        public static implicit operator ItemsList(Item[] items)
+        {
+            return new ItemsList(items.ToList());
+        }
+        
+        public static implicit operator ItemsList(List<Item> items)
+        {
+            return new ItemsList(items);
+        }
+
+        public bool Equals(ItemsList? other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+            
+            return _items.SequenceEqual(other._items);
+        }
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ItemsList)obj);
+        }
+        public override int GetHashCode()
+        {
+            return _items.GetHashCode();
+        }
+
+    } 
+
     public record Item(
         string Id,
         string Title,
@@ -71,36 +121,20 @@
         );
 
     [Parameter]
-    public Item[] Items { get; set; } = null!;
+    public ItemsList Items { get; set; } = null!;
 
     [Parameter]
     public EventCallback<string> OnItemRemoved { get; set; }
     
-    [Parameter]
-    public EventCallback<PriceModel> OnPriceComputed { get; set; }
-    
+   
     [Parameter]
     public string? Style { get; set; }
 
     [Parameter]
     public string? Class { get; set; }
 
-    private PriceDetails? Price { get; set; }
+    [Parameter]
+    public PriceDetails? Price { get; set; }
 
-    private bool NoItems => Items.Length == 0;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (NoItems)
-        {
-            return;
-        }
-
-        Price = await PriceHttpClient.GetCartPrice(Items.Select(item => item.Id).ToArray());
-        
-        if (Price is not null && OnPriceComputed.HasDelegate)
-        {
-            await OnPriceComputed.InvokeAsync(Price.Total);
-        }
-    }   
+    private bool NoItems => !Items.Any();
 }

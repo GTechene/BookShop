@@ -1,0 +1,41 @@
+﻿@model BookPal.Model.Validate3DS1Model
+
+@{
+    ViewBag.Title = "Validate 3DS1 Request";
+}
+
+
+<form method="post" action="/api/Payment/card/3ds1/execute">
+
+    <div>
+        <label for="cardNumber">Card Number: </label>
+        <input id="cardNumber" name="cardNumber" type="text" readonly value="@Model.Card.Number"/>
+        <input name="cardExpirationDate" type="hidden" readonly value="@Model.Card.ExpirationDate"/>
+        <input name="cardOwner" type="hidden" readonly value="@Model.Card.OwnerName"/>
+        <input name="cardSecurityCode" type="hidden" readonly value="@Model.Card.OwnerName"/>
+    </div>
+
+
+    <div>
+        <label for="price">Price: </label>
+        <span id="price">
+            @Model.Price.Amount @Model.Price.Currency
+        </span>
+    </div>
+
+
+    <div>
+        <label for="username">User: </label>
+        <input id="username" name="username" value="@Model.UserName"/>
+    </div>
+
+    <div>
+        <label for="password">Password: </label>
+        <input id="password" name="password" value="@Model.Password" type="password"/>
+    </div>
+
+    <input name="redirectUrl" type="hidden" value="@Model.RedirectUrl"/>
+    <div>
+        <input type="submit" value="SUBMIT"/>
+    </div>
+</form>

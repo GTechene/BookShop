@@ -3,16 +3,22 @@
 @inject NavigationManager NavigationManager
 @inject CatalogHttpClient CatalogHttpClient
 @inject CheckoutHttpClient CheckoutHttpClient
+@inject PriceHttpClient PriceHttpClient
 
 <PageTitle>Checkout</PageTitle>
 
 <div class="d-flex flex-row">
     <div class="flex-fill d-flex flex-column mx-3">
-        <CheckoutForm OnCheckout="@OnCheckout" CanCheckout="@(Price is not null)" />
+        <CheckoutForm 
+            Url="@Url"
+            OnCheckout="@OnCheckout"
+            OnRedirect="@On3D1ValidationRedirect"
+            CanCheckout="@(Price is not null)" />
     </div>
 
     <div style="width:400px;min-height:350px;">
-        <Cart Items="@CartItems" OnPriceComputed="@(price => Price = price)" Style="position: sticky; top: 73px; z-index: 10;"/>
+        <Cart Items="@CartItems" Price="@Price" Style="position: sticky; top: 73px; z-index: 10;"/>
+        <Form3DS1 Url="@_3d1ValidationUrl" Card="@Card" Price="@Price" RedirectUrl="@_redirectUrl" />
     </div>
 </div>
 
@@ -22,7 +28,11 @@
     
     private Urls.Checkout? Url { get; set; }
     
-    private PriceModel? Price { get; set; }
+    private PriceDetails? Price { get; set; }
+    private Card? Card { get; set; }
+
+    private string? _3d1ValidationUrl;
+    private string? _redirectUrl;
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,7 +55,10 @@
                 });
 
         _cartItems = await Task.WhenAll(getBookReferencesTasks);
+
+        Price = await PriceHttpClient.GetCartPrice(Url.Books);
     }
+
     
     private async Task OnCheckout((CheckoutForm.CheckoutFormModel Model, string PaymentHash) t)
     {
@@ -80,15 +93,17 @@
             billingAddress,
             shippingAddress);
 
+        Card = new Card(formModel.Card.Number.Replace(" ", ""), formModel.Card.ExpirationDate, formModel.Card.SecurityCode, formModel.Card.Name);
+        
         var paymentRequest = new PaymentRequest(
-            new Card(formModel.Card.Number.Replace(" ", ""), formModel.Card.ExpirationDate, formModel.Card.SecurityCode, formModel.Card.Name),
+            Card,
             paymentHash
             );
 
         var checkout = new CheckoutRequest(
             Url.Books,
-            Price.Amount,
-            Price.Currency,
+            Price.Total.Amount,
+            Price.Total.Currency,
             customer,
             paymentRequest
             );
@@ -98,5 +113,44 @@
         var receiptUrl = new Urls.Receipt(checkoutResponse.ReceiptId);
         
         NavigationManager.NavigateTo(receiptUrl.ToString());
+    }
+    
+    private void On3D1ValidationRedirect((CheckoutForm.CheckoutFormModel Model, string Url3DS1Validation) t)
+    {
+        if (Url is null)
+        {
+            return;
+        }
+        
+        var (model, url3DS1Validation) = t;
+        
+        // 1. Generate Urls.Checkout
+        var checkoutUrl = Url with {
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            UserName = model.UserName,
+            Email = model.Email,
+            BillingAddress = model.BillingAddress.Address,
+            BillingAddress2 = model.BillingAddress.Address2,
+            BillingCountry = model.BillingAddress.Country,
+            BillingState = model.BillingAddress.State,
+            BillingZipCode = model.BillingAddress.ZipCode,
+            
+            ShippingAddress = model.ShippingAddress.Address,
+            ShippingAddress2 = model.ShippingAddress.Address2,
+            ShippingCountry = model.ShippingAddress.Country,
+            ShippingState = model.ShippingAddress.State,
+            ShippingZipCode = model.ShippingAddress.ZipCode,
+            
+            SameAddressForShippingAsBilling = model.SameAddressForShippingAsBilling,
+            
+            Redirected = true,
+            
+            BaseUrl = NavigationManager.BaseUri
+        };
+
+        Card = new Card(model.Card.Number.Replace(" ", ""), model.Card.ExpirationDate, model.Card.SecurityCode, model.Card.Name);
+        _redirectUrl = checkoutUrl.ToString();
+        _3d1ValidationUrl = url3DS1Validation;
     }
 }

@@ -7,29 +7,37 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
+builder.Services.AddScoped<LogErrorHttpMessageHandler>();
+
 builder.Services.AddHttpClient<CatalogHttpClient>(
     (serviceProvider, httpClient) => {
         var options = serviceProvider.GetRequiredService<IOptions<BookShopApiOptions>>();
         httpClient.BaseAddress = options.Value.Catalog.Uri;
-    });
+    })
+    .AddHttpMessageHandler<LogErrorHttpMessageHandler>();
 
 builder.Services.AddHttpClient<PriceHttpClient>(
     (serviceProvider, httpClient) => {
         var options = serviceProvider.GetRequiredService<IOptions<BookShopApiOptions>>();
         httpClient.BaseAddress = options.Value.Price.Uri;
-    });
+    })
+    .AddHttpMessageHandler<LogErrorHttpMessageHandler>();
 
 builder.Services.AddHttpClient<CheckoutHttpClient>(
     (serviceProvider, httpClient) => {
         var options = serviceProvider.GetRequiredService<IOptions<BookShopApiOptions>>();
         httpClient.BaseAddress = options.Value.Checkout.Uri;
-    });
+    })
+    .AddHttpMessageHandler<LogErrorHttpMessageHandler>();
 
 builder.Services.AddHttpClient<CardHttpClient>(
     (serviceProvider, httpClient) => {
         var options = serviceProvider.GetRequiredService<IOptions<BookPalApiOptions>>();
         httpClient.BaseAddress = options.Value.Uri;
-    });
+    })
+    .AddHttpMessageHandler<LogErrorHttpMessageHandler>();
+
+
 
 builder.Services.AddOptions<BookShopApiOptions>()
     .Bind(builder.Configuration.GetSection(BookShopApiOptions.SectionName))

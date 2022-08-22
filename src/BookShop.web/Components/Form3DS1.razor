@@ -1,0 +1,50 @@
+﻿@using System.Text.Json.Serialization
+
+@* ReSharper disable once InconsistentNaming *@
+@inject IJSRuntime JS
+
+@if (Url is null)
+{
+    return;
+}
+
+<form method="post" action="@Url" class="inline">
+    <input type="hidden" name="cardNumber" value="@Card?.Number">
+    <input type="hidden" name="cardOwner" value="@Card?.OwnerName">
+    <input type="hidden" name="cardSecurityCode" value="@Card?.SecurityCode">
+    <input type="hidden" name="cardExpirationDate" value="@Card?.ExpirationDate">
+    
+    <input type="hidden" name="price" value="@Price?.Total.Amount">
+    <input type="hidden" name="currency" value="@Price?.Total.Currency">
+    
+    <input type="hidden" name="redirect" value="@RedirectUrl">
+
+    <button id="redirectButton" type="submit" style="display: none;"></button>
+</form >
+
+
+@code
+{
+    [Parameter]
+    public string? RedirectUrl { get; set; }
+
+    [Parameter]
+    public Card? Card { get; set; }
+    
+    [Parameter]
+    public PriceDetails? Price { get; set; }
+
+    [Parameter]
+    public string? Url { get; set; }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Url is null || Card is null || Price is null || RedirectUrl is null)
+        {
+            return;
+        }
+        
+        await JS.InvokeAsync<string>("postLinkSubmit");
+    }
+
+}

@@ -1,15 +1,17 @@
 ﻿@page "/"
 
+@inject PriceHttpClient PriceHttpClient
+
 <PageTitle>Catalog</PageTitle>
 
 <div class="d-flex flex-row">
     <div class="flex-fill d-flex flex-column mx-3">
-        <Catalog OnBookSelected="SelectBook" CanSelectBook="CanSelectBook"/>
+        <CatalogItems OnBookSelected="SelectBook" CanSelectBook="CanSelectBook"/>
     </div>
 
     <div style="width:400px;min-height:350px;">
         <div style="position: sticky; top: 73px; z-index: 10;">
-            <Cart Items="@CartItems" OnItemRemoved="@RemoveBook"/>
+            <Cart Items="@CartItems" OnItemRemoved="@RemoveBook" Price="@_price"/>
 
             <div class="align-self-baseline text-center mt-3">
                 @if (CanCheckout)
@@ -38,9 +40,20 @@
     private Cart.Item[] CartItems => _selectedBooks.GroupBy(book => (book.ISBN, book.Title)).Select(group => new Cart.Item(group.Key.ISBN, group.Key.Title, group.Count())).ToArray();
     private bool CanCheckout => CartItems.Length > 0;
 
-    private void SelectBook(BookModel book)
+    private PriceDetails? _price;
+    
+    private async Task RefreshPrice()
+    {
+
+        var isbns = _selectedBooks.Select(book => book.ISBN).ToArray();
+        _price = await PriceHttpClient.GetCartPrice(isbns);
+    }
+
+
+    private async Task SelectBook(BookModel book)
     {
         _selectedBooks.Add(book);
+        await RefreshPrice();
     }
 
     private bool CanSelectBook(BookModel book)
@@ -48,16 +61,17 @@
         return _selectedBooks.Count(b => b.ISBN == book.ISBN) < book.Quantity;
     }
 
-    private void RemoveBook(string isbn)
+    private async Task RemoveBook(string isbn)
     {
         var book = _selectedBooks.First(book => book.ISBN == isbn);
         _selectedBooks.Remove(book);
+        await RefreshPrice();
     }
 
     private string BuildCheckoutUri()
     {
-        return new Urls.Checkout(CartItems.Select(item => item.Id).ToArray())
-            .ToString();
+        var books = CartItems.SelectMany(item => Enumerable.Repeat(item.Id, item.Quantity)).ToArray();
+        return new Urls.Checkout(books).ToString();
     }
 
 }
