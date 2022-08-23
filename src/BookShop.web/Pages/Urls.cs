@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
+using System.Web;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 
@@ -30,7 +31,7 @@ public static class Urls {
         public string? ShippingState { get; init; }
         public string? ShippingZipCode { get; init; }
         
-        public string? PaymentHash { get; init; }
+        public string? Payment { get; init; }
         
         public bool? Redirected { get; init; }
         
@@ -46,7 +47,7 @@ public static class Urls {
                 AddQueryParam(x => x.LastName) +
                 AddQueryParam(x => x.UserName) +
                 AddQueryParam(x => x.Email) +
-                AddQueryParam(x => x.PaymentHash) +
+                AddQueryParam(x => x.Payment) +
                 AddQueryParam(x => x.SameAddressForShippingAsBilling) +
                 AddQueryParam(x => x.BillingAddress) + 
                 AddQueryParam(x => x.BillingAddress2) + 
@@ -149,7 +150,7 @@ public static class Urls {
                 
                 SameAddressForShippingAsBilling = ReadQueryParam(query, x=> x.SameAddressForShippingAsBilling, v => bool.Parse(v)), 
                 
-                PaymentHash = ReadQueryParam(query, x=> x.PaymentHash),
+                Payment = ReadQueryParam(query, x=> x.Payment),
                 
                 BillingAddress = ReadQueryParam(query, x=> x.BillingAddress),
                 BillingAddress2 = ReadQueryParam(query, x=> x.BillingAddress2),

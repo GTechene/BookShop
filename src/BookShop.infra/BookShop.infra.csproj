@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <ProjectReference Include="..\BookShop.domain\BookShop.domain.csproj"/>
+        <ProjectReference Include="..\BookShop.domain\BookShop.domain.csproj" />
     </ItemGroup>
 
     <PropertyGroup>

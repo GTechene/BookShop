@@ -30,7 +30,7 @@ builder.Services.AddHttpClient<CheckoutHttpClient>(
     })
     .AddHttpMessageHandler<LogErrorHttpMessageHandler>();
 
-builder.Services.AddHttpClient<CardHttpClient>(
+builder.Services.AddHttpClient<PaymentHttpClient>(
     (serviceProvider, httpClient) => {
         var options = serviceProvider.GetRequiredService<IOptions<BookPalApiOptions>>();
         httpClient.BaseAddress = options.Value.Uri;

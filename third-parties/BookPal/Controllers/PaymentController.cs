@@ -9,31 +9,64 @@ namespace BookPal.Controllers;
 [Route("api/[controller]")]
 public class PaymentController : Controller
 {
-    private readonly CardValidationService _cardValidationService;
+    private readonly PaymentValidationService _paymentValidationService;
+    private readonly PaymentSerializer _paymentSerializer;
     public PaymentController(
-        CardValidationService cardValidationService)
+        PaymentValidationService paymentValidationService,
+        PaymentSerializer paymentSerializer)
     {
-        _cardValidationService = cardValidationService;
+        _paymentValidationService = paymentValidationService;
+        _paymentSerializer = paymentSerializer;
     }
-    
-    [HttpPost]
-    [Route("card/validation")]
-    public CardValidation GetCardValidation(Card card)
-    {
-        return _cardValidationService.GetValidationFor(card);
-    }
-    
 
-    public record ThreeDs2ValidationRequest(Card Card, string User, string Password);
+    public record PaymentValidationRequest(Card? Card, Price? Price, string? Payment);
+
+    public record PaymentValidationResponse(PaymentValidationType Type, string? Payment, string? RedirectUrl); 
+ 
     
     [HttpPost]
-    [Route("card/3ds2")]
-    public CardValidation Validate3DS2(ThreeDs2ValidationRequest request)
+    [Route("validation")]
+    public async Task<IActionResult> ValidatePayment(PaymentValidationRequest request)
     {
-        return _cardValidationService.Get3DSValidationFor(
+        var (card, price, payment) = request;
+
+        if (payment is not null)
+        {
+            var p = await _paymentSerializer.Deserialize(payment);
+            if (!_paymentValidationService.Validate(p))
+            {
+                return BadRequest(new
+                {
+                    Message = "InvalidPayment"
+                });
+            }
+
+            return Ok();
+        }
+
+        if (card is null || price is null)
+        {
+            return BadRequest();
+        }
+        
+        var paymentValidation = _paymentValidationService.Validate(card, price);
+
+        return Ok(ToResponse(paymentValidation));
+    }
+    
+    public record ThreeDs2ValidationRequest(Card Card, Price Price, string User, string Password);
+
+    
+    [HttpPost]
+    [Route("3ds2")]
+    public async Task<PaymentValidationResponse> Validate3DS2(ThreeDs2ValidationRequest request)
+    {
+        var paymentValidation = _paymentValidationService.Validate3DSecure(
             request.Card,
+            request.Price,
             (request.User, request.Password)
         );
+        return await ToResponse(paymentValidation);;
     }
     
     
@@ -50,7 +83,7 @@ public class PaymentController : Controller
     );
     
     [HttpPost]
-    [Route("card/3ds1")]
+    [Route("3ds1")]
     public IActionResult Validate3DS1(
         [FromForm]
         ThreeDs1ValidationRequest request
@@ -60,10 +93,10 @@ public class PaymentController : Controller
             new Card(request.CardNumber, request.CardOwner, request.CardExpirationDate, request.CardSecurityCode),
             new Price(request.Price, request.Currency),
             request.Redirect,
-            _cardValidationService
+            _paymentValidationService
             ));
     }
-    
+
     public record ThreeDs1ValidationExecutionRequest(
         string RedirectUrl,
         string UserName,
@@ -71,12 +104,14 @@ public class PaymentController : Controller
         string CardNumber,
         string CardOwner,
         DateTime CardExpirationDate,
-        string CardSecurityCode
+        string CardSecurityCode,
+        decimal Price,
+        string Currency
     );
-    
+
     [HttpPost]
-    [Route("card/3ds1/execute")]
-    public IActionResult Execute3DS1Validation(
+    [Route("3ds1/execute")]
+    public async Task<IActionResult> Execute3DS1Validation(
         [FromForm]
         ThreeDs1ValidationExecutionRequest request
     )
@@ -90,10 +125,19 @@ public class PaymentController : Controller
 
         try
         {
-            var validation = _cardValidationService.Get3DSValidationFor(card, (request.UserName, request.Password));
+            var validation = _paymentValidationService.Validate3DSecure(card, new Price(request.Price, request.Currency), (request.UserName, request.Password));
+
+            if (validation.Payment is null)
+            {
+                return Redirect(
+                    request.RedirectUrl
+                );    
+            }
+            
+            var validationResponse = await ToResponse(validation);
             
             return Redirect(
-                request.RedirectUrl + "&paymenthash=" + HttpUtility.UrlEncode(validation.PaymentHash)
+                request.RedirectUrl + "&payment=" + HttpUtility.UrlEncode(validationResponse.Payment)
             );
 
         }
@@ -111,6 +155,15 @@ public class PaymentController : Controller
     {
         var allPaymentMethods = Enum.GetValues<PaymentMethod>();
         return allPaymentMethods;
+    }
+    
+    private async Task<PaymentValidationResponse> ToResponse(PaymentValidation paymentValidation)
+    {
+        return new PaymentValidationResponse(
+            paymentValidation.Type,
+            paymentValidation.Payment != null ? await _paymentSerializer.Serialize(paymentValidation.Payment) : null,
+            paymentValidation.RedirectionUrl
+        );
     }
 }
 

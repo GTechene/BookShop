@@ -18,18 +18,17 @@ public class CheckoutController : ControllerBase {
     }
 
     [HttpPost]
-    public CheckoutResponse ProcessCheckout(CheckoutRequest request)
+    public async Task<CheckoutResponse> ProcessCheckout(CheckoutRequest request)
     {
         var cart = request.Books.Select(ISBN.Parse)
             .Aggregate(Cart.Empty, func: (cart, isbn) => cart.Add(isbn));
 
         var checkout = new Checkout(cart, 
-            new Payment(), new Price(request.Price, request.Currency));
+            Payment.ByCard(request.Payment), new Price(request.Price, request.Currency));
 
-        var receipt = _checkoutService.ProcessCheckout(checkout);
+        var receipt = await _checkoutService.ProcessCheckout(checkout);
 
-        return new CheckoutResponse(
-            receipt.Id.ToString());
+        return new CheckoutResponse(receipt.Id.ToString());
     }
 
     public record Card(
@@ -65,7 +64,7 @@ public class CheckoutController : ControllerBase {
         decimal Price,
         string Currency,
         Customer Customer,
-        PaymentRequest Payment
+        string Payment
     );
 
     public record CheckoutResponse(

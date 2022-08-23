@@ -37,27 +37,32 @@ public class CheckoutService
         _inventoryProvider = inventoryProvider;
     }
 
-    public Receipt ProcessCheckout(Checkout checkout)
+    public async Task<Receipt> ProcessCheckout(Checkout checkout)
     {
         CheckPrice(checkout);
 
-        _catalogLock.Lock();
+        try
+        {
+            _catalogLock.Lock();
+            
+            var books = CheckBooksAreStillAvailable(checkout);
 
-        var books = CheckBooksAreStillAvailable(checkout);
+            await ProcessPayment(checkout.Payment);
 
-        ProcessPayment(checkout.Payment);
+            var id = ReceiptId.Generate();
 
-        var id = ReceiptId.Generate();
+            SaveTransaction(id, checkout.Cart, checkout.Price);
 
-        SaveTransaction(id, checkout.Cart, checkout.Price);
-
-        RemoveCopiesOfBooksFromInventory(books);
-
-        _catalogLock.UnLock();
-
-        return new Receipt(
-            id, books,
-            checkout.Price);
+            RemoveCopiesOfBooksFromInventory(books);
+            
+            return new Receipt(
+                id, books,
+                checkout.Price);
+        }
+        finally
+        {
+            _catalogLock.UnLock();    
+        }
     }
 
     private void RemoveCopiesOfBooksFromInventory(IReadOnlyCollection<(BookReference Book, Quantity Quantity)> books)
@@ -65,9 +70,9 @@ public class CheckoutService
         _inventoryManager.RemoveCopiesOfBooks(books);
     }
 
-    private void ProcessPayment(Payment.Payment checkoutPayment)
+    private async Task ProcessPayment(Payment.Payment checkoutPayment)
     {
-        var paymentReceipt = _paymentService.Process(checkoutPayment);
+        var paymentReceipt = await _paymentService.Process(checkoutPayment);
 
         if (paymentReceipt is PaymentReceipt.FailureReceipt failure)
         {

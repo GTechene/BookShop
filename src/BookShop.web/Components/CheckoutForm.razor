@@ -1,7 +1,7 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using BookShop.web.Pages
 
-@inject CardHttpClient CardHttpClient
+@inject PaymentHttpClient PaymentHttpClient
 
 @if (_formModel is null)
 {
@@ -160,7 +160,11 @@
         {
             <div class="row">
                 <div class="col-md-12 mb-3">
-                    <label for="cc-number">Credit card number</label>
+                    <label for="cc-number" title="
+3DS2 : 4222 2222 2222 2222
+3DS1 : 4111 1111 1111 1111
+None : 4000 0000 0000 0000
+">Credit card number</label>
                     <InputText id="cc-number" placeholder="XXXX XXXX XXXX XXXX" class="form-control" @bind-Value="_formModel.Card.Number"/>
                 </div>
             </div>
@@ -236,12 +240,15 @@
 
     [Parameter]
     public Urls.Checkout Url { get; set; } = null!;
-
+    
     [Parameter]
     public bool CanCheckout { get; set; }
 
     [Parameter]
-    public EventCallback<(CheckoutFormModel Model, string PaymentHash)> OnCheckout { get; set; }
+    public PriceModel Price { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<(CheckoutFormModel? Model, string Payment)> OnCheckout { get; set; }
 
     [Parameter]
     public EventCallback<(CheckoutFormModel Model, string Uri)> OnRedirect { get; set; }
@@ -277,7 +284,7 @@
             return;
         }
 
-        if (Url.PaymentHash is null)
+        if (Url.Payment is null)
         {
             _paymentErrorModel = new ErrorModel
             {
@@ -285,9 +292,9 @@
             };
         }
 
-        if (Url.PaymentHash is not null)
+        if (Url.Payment is not null)
         {
-            await ProcessCheckout(Url.PaymentHash);
+            await ProcessCheckout(Url.Payment);
         }
     }
 
@@ -303,9 +310,9 @@
             _paymentErrorModel = null;
 
         var card = new Card(_formModel.Card.Number.Replace(" ", ""), _formModel.Card.ExpirationDate, _formModel.Card.SecurityCode, _formModel.Card.Name);
-        var cardAction = await CardHttpClient.GetCardAction(card);
+        var cardAction = await PaymentHttpClient.ValidatePayment(card, Price);
 
-        if (cardAction is CardValidation.InvalidCard)
+        if (cardAction is PaymentValidation.InvalidCard)
         {
             _paymentErrorModel = new ErrorModel
             {
@@ -316,14 +323,14 @@
 
         switch (cardAction.Type)
         {
-            case CardValidationType.None when cardAction.PaymentHash is not null:
-                await ProcessCheckout(cardAction.PaymentHash);
+            case PaymentValidationType.None when cardAction.Payment is not null:
+                await ProcessCheckout(cardAction.Payment);
                 return;
-            case CardValidationType.With3DS2:
+            case PaymentValidationType.With3DS2:
                 _validation3ds2Model = new Validation3DS2Model();
                 return;
-            case CardValidationType.With3DS1:
-                await OnRedirect.InvokeAsync((_formModel, cardAction.WebSiteUrl)!);
+            case PaymentValidationType.With3DS1:
+                await OnRedirect.InvokeAsync((_formModel, cardAction.RedirectUrl)!);
                 return;
             default:
                 throw new NotImplementedException();
@@ -340,23 +347,36 @@
 
         var card = new Card(_formModel.Card.Number.Replace(" ", ""), _formModel.Card.ExpirationDate, _formModel.Card.SecurityCode, _formModel.Card.Name);
 
-        var paymentHash = await CardHttpClient.Validate3DS2(card, _validation3ds2Model.User, _validation3ds2Model.Password);
+        var validation = await PaymentHttpClient.Validate3DS2(card, Price, _validation3ds2Model.User, _validation3ds2Model.Password);
 
-        if (paymentHash is null)
+        if (validation is PaymentValidation.PaymentRefused)
         {
+            _paymentErrorModel = new ErrorModel
+            {
+                ErrorMessage = "Payment refused"
+            };
+            return;
+        }
+        
+        if (validation?.Payment is null)
+        {
+            _paymentErrorModel = new ErrorModel
+            {
+                ErrorMessage = "Payment failed"
+            };
             return;
         }
 
-        await ProcessCheckout(paymentHash);
+        await ProcessCheckout(validation.Payment);
     }
 
-    private async Task ProcessCheckout(string paymentHash)
+    private async Task ProcessCheckout(string payment)
     {
         if (_formModel is null)
         {
             return;
         }
 
-        await OnCheckout.InvokeAsync((Model:_formModel, PaymentHash:paymentHash));
+        await OnCheckout.InvokeAsync((Model:_formModel, Payment:payment));
     }
 }

@@ -1,4 +1,7 @@
 ﻿namespace BookShop.domain.Checkout.Payment;
 
-// TODO : handle different kind of payments : Visa, master card etc.. The same way as ISBN ?
-public record Payment;
+public abstract record Payment {
+    public record CardPayment(string Payment) : Payment;
+
+    public static Payment ByCard(string payment) => new CardPayment(payment);
+};

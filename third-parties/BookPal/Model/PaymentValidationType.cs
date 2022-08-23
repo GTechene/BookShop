@@ -1,6 +1,6 @@
 ﻿namespace BookPal.Model;
 
-public enum CardValidationType {
+public enum PaymentValidationType {
     None, 
     With3DS1,
     With3DS2     

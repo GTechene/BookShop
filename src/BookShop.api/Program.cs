@@ -9,6 +9,7 @@ using BookShop.domain.Pricing;
 using BookShop.domain.Pricing.Discounts;
 using BookShop.infra;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +38,19 @@ builder.Services.AddTransient<IUpdateInventory>(services => services.GetRequired
 builder.Services.AddSingleton<ILogTransaction, TransactionLog>();
 
 builder.Services.AddScoped<CheckoutService>();
-builder.Services.AddScoped<IProcessPayment, PaymentProcessor>();
+
+builder.Services.AddOptions<BookPalApiOptions>()
+    .ValidateDataAnnotations()
+    .Bind(builder.Configuration.GetSection(BookPalApiOptions.Section));
+
+builder.Services.AddHttpClient<BookPalApiHttpClient>((serviceProvider, client) => {
+
+    var options = serviceProvider.GetRequiredService<IOptions<BookPalApiOptions>>();
+    client.BaseAddress = options.Value.Uri;
+
+});
+
+builder.Services.AddTransient<IProcessPayment>(serviceProvider => serviceProvider.GetRequiredService<BookPalApiHttpClient>());
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

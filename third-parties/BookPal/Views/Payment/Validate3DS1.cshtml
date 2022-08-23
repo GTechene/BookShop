@@ -5,14 +5,17 @@
 }
 
 
-<form method="post" action="/api/Payment/card/3ds1/execute">
+<form method="post" action="/api/Payment/3ds1/execute">
 
     <div>
-        <label for="cardNumber">Card Number: </label>
-        <input id="cardNumber" name="cardNumber" type="text" readonly value="@Model.Card.Number"/>
+        <label for="cardNumberLabel">Card Number: </label>
+        <span id="cardNumberLabel">
+            @Model.Card.Number
+        </span>
+        <input name="cardNumber" type="hidden" readonly value="@Model.Card.Number"/>
         <input name="cardExpirationDate" type="hidden" readonly value="@Model.Card.ExpirationDate"/>
         <input name="cardOwner" type="hidden" readonly value="@Model.Card.OwnerName"/>
-        <input name="cardSecurityCode" type="hidden" readonly value="@Model.Card.OwnerName"/>
+        <input name="cardSecurityCode" type="hidden" readonly value="@Model.Card.SecurityCode"/>
     </div>
 
 
@@ -21,6 +24,9 @@
         <span id="price">
             @Model.Price.Amount @Model.Price.Currency
         </span>
+        
+        <input name="price" type="hidden" readonly value="@Model.Price.Amount"/>
+        <input name="currency" type="hidden" readonly value="@Model.Price.Currency"/>
     </div>
 
 

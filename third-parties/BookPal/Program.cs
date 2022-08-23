@@ -24,12 +24,17 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddRazorPages();
 
+builder.Services.AddSingleton<PaymentSerializer>();
 builder.Services.AddScoped<HashGenerator>();
-builder.Services.AddScoped<CardValidationService>();
+builder.Services.AddScoped<PaymentValidationService>();
 
 builder.Services.AddOptions<HashOptions>()
-    .Bind(builder.Configuration.GetSection(HashOptions.SectionName))
-    .ValidateDataAnnotations();
+    .ValidateDataAnnotations()
+    .Bind(builder.Configuration.GetSection(HashOptions.SectionName));
+
+builder.Services.AddOptions<CypherOptions>()
+    .ValidateDataAnnotations()
+    .Bind(builder.Configuration.GetSection(CypherOptions.SectionName));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

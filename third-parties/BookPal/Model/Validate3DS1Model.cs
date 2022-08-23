@@ -9,17 +9,17 @@ public class Validate3DS1Model {
 
     public Card Card { get; }
     public Price Price { get; }
-    private readonly CardValidationService _cardValidationService;
+    private readonly PaymentValidationService _paymentValidationService;
     
     public string RedirectUrl { get; }
     public Validate3DS1Model(
         Card card, Price price, 
         string redirectUrl, 
-        CardValidationService cardValidationService)
+        PaymentValidationService paymentValidationService)
     {
         Card = card;
         Price = price;
-        _cardValidationService = cardValidationService;
+        _paymentValidationService = paymentValidationService;
         RedirectUrl = redirectUrl;
     }
     

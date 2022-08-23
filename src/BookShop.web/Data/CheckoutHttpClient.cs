@@ -31,11 +31,6 @@ public record Address(
     string Country
 );
 
-public record PaymentRequest(
-    Card Card,
-    string PaymentHash
-);
-
 public record Customer(
     string FirstName,
     string LastName,
@@ -50,7 +45,7 @@ public record CheckoutRequest(
     decimal Price,
     string Currency,
     Customer Customer,
-    PaymentRequest Payment
+    string Payment
 );
 
 public record CheckoutResponse(string ReceiptId);

@@ -14,8 +14,8 @@
     <input type="hidden" name="cardSecurityCode" value="@Card?.SecurityCode">
     <input type="hidden" name="cardExpirationDate" value="@Card?.ExpirationDate">
     
-    <input type="hidden" name="price" value="@Price?.Total.Amount">
-    <input type="hidden" name="currency" value="@Price?.Total.Currency">
+    <input type="hidden" name="price" value="@Price?.Amount">
+    <input type="hidden" name="currency" value="@Price?.Currency">
     
     <input type="hidden" name="redirect" value="@RedirectUrl">
 
@@ -32,7 +32,7 @@
     public Card? Card { get; set; }
     
     [Parameter]
-    public PriceDetails? Price { get; set; }
+    public PriceModel? Price { get; set; }
 
     [Parameter]
     public string? Url { get; set; }

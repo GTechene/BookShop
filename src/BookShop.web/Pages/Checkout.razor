@@ -11,6 +11,7 @@
     <div class="flex-fill d-flex flex-column mx-3">
         <CheckoutForm 
             Url="@Url"
+            Price="@Price?.Total"
             OnCheckout="@OnCheckout"
             OnRedirect="@On3D1ValidationRedirect"
             CanCheckout="@(Price is not null)" />
@@ -18,7 +19,7 @@
 
     <div style="width:400px;min-height:350px;">
         <Cart Items="@CartItems" Price="@Price" Style="position: sticky; top: 73px; z-index: 10;"/>
-        <Form3DS1 Url="@_3d1ValidationUrl" Card="@Card" Price="@Price" RedirectUrl="@_redirectUrl" />
+        <Form3DS1 Url="@_3d1ValidationUrl" Card="@Card" Price="@Price?.Total" RedirectUrl="@_redirectUrl" />
     </div>
 </div>
 
@@ -60,14 +61,16 @@
     }
 
     
-    private async Task OnCheckout((CheckoutForm.CheckoutFormModel Model, string PaymentHash) t)
+    private async Task OnCheckout((CheckoutForm.CheckoutFormModel Model, string Payment) t)
     {
-        if (Url is null || Price is null)
+        if (Url is null)
         {
             return;
         }
+
+        Price ??= await PriceHttpClient.GetCartPrice(Url.Books);
         
-        var (formModel, paymentHash) = t;
+        var (formModel, payment) = t;
         
         var billingAddress = new Address(
             formModel.BillingAddress.Address,
@@ -92,20 +95,13 @@
             formModel.Email,
             billingAddress,
             shippingAddress);
-
-        Card = new Card(formModel.Card.Number.Replace(" ", ""), formModel.Card.ExpirationDate, formModel.Card.SecurityCode, formModel.Card.Name);
         
-        var paymentRequest = new PaymentRequest(
-            Card,
-            paymentHash
-            );
-
         var checkout = new CheckoutRequest(
             Url.Books,
-            Price.Total.Amount,
+            Price!.Total.Amount,
             Price.Total.Currency,
             customer,
-            paymentRequest
+            payment
             );
 
         var checkoutResponse = await CheckoutHttpClient.Checkout(checkout);
