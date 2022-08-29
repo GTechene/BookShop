@@ -205,6 +205,8 @@ public abstract record ISBN {
     }
 
     public class InvalidIsbn : Exception {
+        
+         
         public InvalidIsbn(string message) : base(message) {}
     }
 }

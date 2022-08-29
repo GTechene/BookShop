@@ -23,7 +23,6 @@ public class PaymentController : Controller
 
     public record PaymentValidationResponse(PaymentValidationType Type, string? Payment, string? RedirectUrl); 
  
-    
     [HttpPost]
     [Route("validation")]
     public async Task<IActionResult> ValidatePayment(PaymentValidationRequest request)
