@@ -1,4 +1,6 @@
 ﻿@page "/checkout"
+@using BookShop.shared
+@using Card = BookShop.web.Data.Card
 
 @inject NavigationManager NavigationManager
 @inject CatalogHttpClient CatalogHttpClient
@@ -29,7 +31,7 @@
     
     private Urls.Checkout? Url { get; set; }
     
-    private PriceDetails? Price { get; set; }
+    private PriceResponse? Price { get; set; }
     private Card? Card { get; set; }
 
     private string? _3d1ValidationUrl;

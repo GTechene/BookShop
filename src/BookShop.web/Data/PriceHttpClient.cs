@@ -1,4 +1,6 @@
-﻿namespace BookShop.web.Data;
+﻿using BookShop.shared;
+
+namespace BookShop.web.Data;
 
 public class PriceHttpClient {
     private readonly HttpClient _httpClient;
@@ -8,9 +10,9 @@ public class PriceHttpClient {
         _httpClient = httpClient;
     }
 
-    public Task<PriceDetails?> GetCartPrice(IEnumerable<string> books)
+    public Task<PriceResponse?> GetCartPrice(IEnumerable<string> books)
     {
-        return _httpClient.GetFromJsonAsync<PriceDetails>($"/api/Price{QueryString(books)}");
+        return _httpClient.GetFromJsonAsync<PriceResponse>($"/api/Price{QueryString(books)}");
     }
 
     private static string QueryString(IEnumerable<string> books)

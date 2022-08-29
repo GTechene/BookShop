@@ -7,7 +7,7 @@ public static class Countries {
     private static List<Country>? _countries;
     private static readonly SemaphoreSlim Lock = new(1);
     
-    public static IReadOnlyCollection<Country> All()
+    public static IEnumerable<Country> All()
     {
         if (_countries is not null)
         {

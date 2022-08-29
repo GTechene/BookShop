@@ -1,4 +1,6 @@
 ﻿@using System.Text.Json.Serialization
+@using BookShop.shared
+@using Card = BookShop.web.Data.Card
 
 @* ReSharper disable once InconsistentNaming *@
 @inject IJSRuntime JS
@@ -32,7 +34,7 @@
     public Card? Card { get; set; }
     
     [Parameter]
-    public PriceModel? Price { get; set; }
+    public BookShop.shared.Price? Price { get; set; }
 
     [Parameter]
     public string? Url { get; set; }

@@ -1,4 +1,8 @@
-﻿namespace BookShop.web.Data; 
+﻿using System.Text.Json;
+using System.Text.RegularExpressions;
+using BookShop.shared;
+
+namespace BookShop.web.Data; 
 
 public class LogErrorHttpMessageHandler : DelegatingHandler {
     private readonly ILogger<LogErrorHttpMessageHandler> _logger;
@@ -19,18 +23,37 @@ public class LogErrorHttpMessageHandler : DelegatingHandler {
             {
                 return response;
             }
-            
-            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            _logger.LogError("Route {Method} {Route} returned a non successful status code {StatusCode} with Payload : {Payload}", request.Method.Method, request.RequestUri, response.StatusCode, errorContent);
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            var apiError = JsonSerializer.Deserialize<ApiError>(content);
+
+            if (apiError is not null && !string.IsNullOrWhiteSpace(apiError.Message))
+            {
+                LogError("Route {Method} {Route} returned a non successful status code {StatusCode} with Error : {Error}", request.Method.Method, request.RequestUri, response.StatusCode, apiError.Message);
+            }
+            else
+            {
+                LogError("Route {Method} {Route} returned a non successful status code {StatusCode} with Payload : {Payload}", request.Method.Method, request.RequestUri, response.StatusCode, content);    
+            }
 
             return response;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,
+            LogException(ex,
                 "Route {Method} {Route} threw an exception", request.Method.Method, request.RequestUri);
             throw;
         }
+    }
+
+    private void LogException(Exception ex, string messageTemplate, params object?[] args)
+    {
+        _logger.LogError(ex, messageTemplate, args);
+    }
+    
+    private void LogError(string messageTemplate, params object?[] args)
+    {
+        _logger.LogError(messageTemplate, args);
     }
 }

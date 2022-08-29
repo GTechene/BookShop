@@ -9,4 +9,8 @@
     <ItemGroup>
       <EmbeddedResource Include="Data\countries.txt" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BookShop.shared\BookShop.shared.csproj" />
+    </ItemGroup>
 </Project>

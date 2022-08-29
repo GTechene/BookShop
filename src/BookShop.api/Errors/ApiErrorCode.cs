@@ -1,19 +1,7 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Text;
 
-namespace BookShop.api;
-
-internal record ApiError(string Code, string Message) {
-    public static ApiError FromException<TException>(TException ex)
-        where TException : Exception
-    {
-        var code = ApiErrorCode.FromException<TException>(); 
-
-        var message = ex.Message;
-
-        return new ApiError(code, message);
-    }
-}
+namespace BookShop.api.Errors;
 
 public static class ApiErrorCode {
 
@@ -84,4 +72,4 @@ public static class ApiErrorCode {
     {
         return CodeCache.TryGetValue(name, out var code) ? code : null;
     }
-} 
+}

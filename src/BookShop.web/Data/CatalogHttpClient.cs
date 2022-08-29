@@ -1,4 +1,6 @@
-﻿namespace BookShop.web.Data;
+﻿using BookShop.shared;
+
+namespace BookShop.web.Data;
 
 public class CatalogHttpClient {
     private readonly HttpClient _httpClient;
@@ -8,14 +10,14 @@ public class CatalogHttpClient {
         _httpClient = httpClient;
     }
 
-    public Task<Catalog?> GetCatalog(int requestedPage = 1)
+    public Task<CatalogResponse?> GetCatalog(int requestedPage = 1)
     {
-        return _httpClient.GetFromJsonAsync<Catalog>($"/api/Catalog?Currency=EUR&PageNumber={requestedPage}");
+        return _httpClient.GetFromJsonAsync<CatalogResponse>($"/api/Catalog?Currency=EUR&PageNumber={requestedPage}");
     }
     
-    public Task<BookReference?> GetBookReference(string isbn)
+    public Task<BookReferenceResponse?> GetBookReference(string isbn)
     {
-        return _httpClient.GetFromJsonAsync<BookReference>($"/api/Catalog/{isbn}");
+        return _httpClient.GetFromJsonAsync<BookReferenceResponse>($"/api/Catalog/{isbn}");
     }
 
 }

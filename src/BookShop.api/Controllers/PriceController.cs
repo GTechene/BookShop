@@ -1,6 +1,7 @@
 ﻿using BookShop.domain;
 using BookShop.domain.Prices;
 using BookShop.domain.Pricing;
+using BookShop.shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.api.Controllers;
@@ -27,12 +28,9 @@ public class PriceController : ControllerBase {
         var (price, discounts) = _pricer.ComputePrice(cart, request.Currency);
 
         return new PriceResponse(
-            price,
+            new shared.Price(price.Amount, price.Currency),
             discounts.Select(discount => $"{discount.Type} discount applied").ToArray()
         );
     }
 }
 
-// TODO : instead of providing the list of ISBN, repeating multiple times the same isbn, it feels more intuitive to provide a json like : { "ISBN" : quantity } which can be deserialized as a dictionary
-public record PriceRequest(string[] Books, string Currency);
-public record PriceResponse(Price Total, string[] Discounts);

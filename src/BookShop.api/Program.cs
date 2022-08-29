@@ -1,5 +1,5 @@
-using System.Net.Mime;
-using BookShop.api;
+using System.Net;
+using BookShop.api.Errors;
 using BookShop.domain;
 using BookShop.domain.Catalog;
 using BookShop.domain.Checkout;
@@ -8,12 +8,13 @@ using BookShop.domain.Prices;
 using BookShop.domain.Pricing;
 using BookShop.domain.Pricing.Discounts;
 using BookShop.infra;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Logging.AddConsole();
 
 builder.Services.AddControllers();
 
@@ -21,7 +22,6 @@ builder.Services.AddScoped<CartPricer>();
 
 builder.Services.AddScoped<IProvideBookPrice, BookPriceRepository>();
 builder.Services.AddScoped<IProvideDiscountDefinitions, DiscountDefinitionRepository>();
-
 
 builder.Services.AddSingleton<BookMetadataRepository>();
 builder.Services.AddTransient<IProvideBookMetadata>(services => services.GetRequiredService<BookMetadataRepository>());
@@ -47,11 +47,9 @@ builder.Services.AddHttpClient<BookPalApiHttpClient>((serviceProvider, client) =
 
     var options = serviceProvider.GetRequiredService<IOptions<BookPalApiOptions>>();
     client.BaseAddress = options.Value.Uri;
-
 });
 
 builder.Services.AddTransient<IProcessPayment>(serviceProvider => serviceProvider.GetRequiredService<BookPalApiHttpClient>());
-
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -66,40 +64,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
-app.UseExceptionHandler(exceptionHandlerApp => {
-    exceptionHandlerApp.Run(async context => {
-        context.Response.ContentType = MediaTypeNames.Application.Json;
-        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-        var exception = exceptionHandlerPathFeature?.Error;
-
-        switch (exception)
-        {
-            case ISBN.InvalidIsbn invalidIsbn:
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(ApiError.FromException(invalidIsbn));
-                break;
-            case UnavailableBooks unavailableBooks:
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(ApiError.FromException(unavailableBooks));
-                break;
-            case InvalidCheckoutPrice invalidCheckoutPrice:
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(ApiError.FromException(invalidCheckoutPrice));
-                break;
-            case PaymentProcessFailed paymentProcessFailed:
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(ApiError.FromException(paymentProcessFailed));
-                break;
-            case {} ex:
-                context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                await context.Response.WriteAsJsonAsync(ApiError.FromException(ex));
-                break;
-        }
-
-    });
-});
-
+app.UseExceptionHandler(handler =>
+    handler
+        .On<ISBN.InvalidIsbn>(HttpStatusCode.BadRequest, LogLevel.Error)
+        .On<UnavailableBooks>(HttpStatusCode.BadRequest, LogLevel.Error)
+        .On<InvalidCheckoutPrice>(HttpStatusCode.BadRequest, LogLevel.Error)
+        .On<PaymentProcessFailed>(HttpStatusCode.BadRequest, LogLevel.Error)
+);
 
 app.UseHttpsRedirection();
 

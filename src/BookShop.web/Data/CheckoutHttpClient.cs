@@ -1,4 +1,6 @@
-﻿namespace BookShop.web.Data; 
+﻿using BookShop.shared;
+
+namespace BookShop.web.Data; 
 
 public class CheckoutHttpClient {
     private readonly HttpClient _httpClient;
@@ -23,29 +25,3 @@ public class CheckoutHttpClient {
         return checkoutResponse;
     }
 }
-
-public record Address(
-    string MainAddress,
-    string? AdditionalAddress,
-    string ZipCode,
-    string Country
-);
-
-public record Customer(
-    string FirstName,
-    string LastName,
-    string UserName,
-    string? Email,
-    Address BillingAddress,
-    Address? ShippingAddress
-);
-
-public record CheckoutRequest(
-    string[] Books,
-    decimal Price,
-    string Currency,
-    Customer Customer,
-    string Payment
-);
-
-public record CheckoutResponse(string ReceiptId);

@@ -13,6 +13,7 @@
     <ItemGroup>
         <ProjectReference Include="..\BookShop.domain\BookShop.domain.csproj" />
         <ProjectReference Include="..\BookShop.infra\BookShop.infra.csproj" />
+        <ProjectReference Include="..\BookShop.shared\BookShop.shared.csproj" />
     </ItemGroup>
 
 </Project>

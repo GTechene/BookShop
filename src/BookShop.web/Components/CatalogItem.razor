@@ -1,4 +1,5 @@
-﻿<div class="card mb-3">
+﻿@using BookShop.shared
+<div class="card mb-3">
     <div class="row g-0">
         <div class="col-md-4">
             <img
@@ -45,7 +46,7 @@
 @code {
 
     [Parameter]
-    public BookModel BookToDisplay { get; set; } = null!;
+    public BookResponse BookToDisplay { get; set; } = null!;
 
     [Parameter]
     public bool CanBeSelected { get; set; }
@@ -53,6 +54,6 @@
     private bool Disabled => !CanBeSelected;
 
     [Parameter]
-    public EventCallback<BookModel> OnBookAdded { get; set; }
+    public EventCallback<BookResponse> OnBookAdded { get; set; }
 
 }

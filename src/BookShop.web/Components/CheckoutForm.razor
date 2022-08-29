@@ -1,5 +1,7 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using BookShop.shared
 @using BookShop.web.Pages
+@using Card = BookShop.web.Data.Card
 
 @inject PaymentHttpClient PaymentHttpClient
 
@@ -245,7 +247,7 @@ None : 4000 0000 0000 0000
     public bool CanCheckout { get; set; }
 
     [Parameter]
-    public PriceModel Price { get; set; } = null!;
+    public shared.Price Price { get; set; } = null!;
 
     [Parameter]
     public EventCallback<(CheckoutFormModel? Model, string Payment)> OnCheckout { get; set; }

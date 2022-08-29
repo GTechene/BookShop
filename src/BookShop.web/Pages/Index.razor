@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using BookShop.shared
+@using System.Runtime.Serialization
 
 @inject PriceHttpClient PriceHttpClient
 
@@ -35,28 +37,33 @@
 
 
 @code {
-    private readonly List<BookModel> _selectedBooks = new();
+    private readonly List<BookResponse> _selectedBooks = new();
 
     private Cart.Item[] CartItems => _selectedBooks.GroupBy(book => (book.ISBN, book.Title)).Select(group => new Cart.Item(group.Key.ISBN, group.Key.Title, group.Count())).ToArray();
     private bool CanCheckout => CartItems.Length > 0;
 
-    private PriceDetails? _price;
+    private PriceResponse? _price;
     
     private async Task RefreshPrice()
     {
-
+        // if (!_selectedBooks.Any())
+        // {
+        //     _price = null;
+        //     return;
+        // }
+        
         var isbns = _selectedBooks.Select(book => book.ISBN).ToArray();
         _price = await PriceHttpClient.GetCartPrice(isbns);
     }
 
 
-    private async Task SelectBook(BookModel book)
+    private async Task SelectBook(BookResponse book)
     {
         _selectedBooks.Add(book);
         await RefreshPrice();
     }
 
-    private bool CanSelectBook(BookModel book)
+    private bool CanSelectBook(BookResponse book)
     {
         return _selectedBooks.Count(b => b.ISBN == book.ISBN) < book.Quantity;
     }

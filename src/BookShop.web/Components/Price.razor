@@ -1,4 +1,5 @@
-﻿@{
+﻿@using BookShop.shared
+@{
     var (priceIntegerPart, priceFractionalPart) = Value.Amount.SplitParts();
 }
 <div class="@Class">
@@ -9,7 +10,7 @@
 @code {
 
     [Parameter]
-    public PriceModel Value { get; set; } = null!;
+    public BookShop.shared.Price Value { get; set; } = null!;
 
     [Parameter]
     public string? Class { get; set; }

@@ -1,9 +1,11 @@
 ﻿using BookShop.domain;
 using BookShop.domain.Checkout;
 using BookShop.domain.Checkout.Payment;
-using BookShop.domain.Prices;
 using BookShop.domain.Pricing;
+using BookShop.shared;
 using Microsoft.AspNetCore.Mvc;
+
+using Price = BookShop.domain.Prices.Price;
 
 namespace BookShop.api.Controllers;
 
@@ -30,44 +32,5 @@ public class CheckoutController : ControllerBase {
 
         return new CheckoutResponse(receipt.Id.ToString());
     }
-
-    public record Card(
-        string Number,
-        DateTime ExpirationDate,
-        string SecurityCode,
-        string OwnerName
-    );
-    
-    public record PaymentRequest(
-        Card Card,
-        string PaymentHash
-    );
-    
-    public record Address(
-        string MainAddress,
-        string? AdditionalAddress,
-        string ZipCode,
-        string Country
-    );
-
-    public record Customer(
-        string FirstName,
-        string LastName,
-        string UserName,
-        string? Email,
-        Address BillingAddress,
-        Address? ShippingAddress
-    );
-
-    public record CheckoutRequest(
-        string[] Books,
-        decimal Price,
-        string Currency,
-        Customer Customer,
-        string Payment
-    );
-
-    public record CheckoutResponse(
-        string ReceiptId);
 }
 

@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.Extensions.Primitives
 @using System.Collections
+@using BookShop.shared
 
 <div class="card @Class" style="@Style">
     <div class="card-header">
@@ -134,7 +135,7 @@
     public string? Class { get; set; }
 
     [Parameter]
-    public PriceDetails? Price { get; set; }
+    public PriceResponse? Price { get; set; }
 
     private bool NoItems => !Items.Any();
 }

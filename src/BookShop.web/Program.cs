@@ -37,8 +37,6 @@ builder.Services.AddHttpClient<PaymentHttpClient>(
     })
     .AddHttpMessageHandler<LogErrorHttpMessageHandler>();
 
-
-
 builder.Services.AddOptions<BookShopApiOptions>()
     .Bind(builder.Configuration.GetSection(BookShopApiOptions.SectionName))
     .ValidateDataAnnotations();
@@ -46,6 +44,8 @@ builder.Services.AddOptions<BookShopApiOptions>()
 builder.Services.AddOptions<BookPalApiOptions>()
     .Bind(builder.Configuration.GetSection(BookPalApiOptions.SectionName))
     .ValidateDataAnnotations();
+
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 
@@ -65,5 +65,7 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+
 
 app.Run();
