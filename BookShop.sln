@@ -19,11 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.web", "src\BookSho
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "third-parties", "third-parties", "{D5FF00F7-E806-4448-B57E-A38E4B6CD5D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookAdvisor", "third-parties\BookAdvisor\BookAdvisor.csproj", "{739273A6-353D-4E76-9384-053D1130AD72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookAdvisor", "third-parties\BookAdvisor\BookAdvisor.csproj", "{739273A6-353D-4E76-9384-053D1130AD72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookPal", "third-parties\BookPal\BookPal.csproj", "{15ADFF64-62F3-4B62-A2AE-2EA877F9E79B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookPal", "third-parties\BookPal\BookPal.csproj", "{15ADFF64-62F3-4B62-A2AE-2EA877F9E79B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookShop.shared", "src\BookShop.shared\BookShop.shared.csproj", "{79A9A96C-C101-4181-9490-C6570C772B4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.shared", "src\BookShop.shared\BookShop.shared.csproj", "{79A9A96C-C101-4181-9490-C6570C772B4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

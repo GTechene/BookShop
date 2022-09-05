@@ -1,0 +1,47 @@
+﻿@page "/receipt"
+@using BookShop.shared
+
+@inject NavigationManager NavigationManager
+@inject CommandHttpClient CommandHttpClient
+
+<PageTitle>Receipt</PageTitle>
+
+<h1>Thank you for your purchase !</h1>
+@if (Command != null)
+{
+    <div class="card" style="width: 48em">
+        <h5 class="card-header">Command #@Url!.ReceiptId</h5>
+        <div class="card-body">
+            <ul class="list-group">
+                @foreach (var group in Command.Books.GroupBy(book => book.ISBN))
+                {
+                    <li class="list-group-item">
+                        @{
+                            // TODO : align number of books to the right
+                            var books = Command.Books.Where(book => book.ISBN == group.Key).ToList();
+                        }
+                        @books.First().Title ×@books.Count
+                    </li>
+                }
+            </ul>
+        </div>
+        <p class="card-footer" style="text-align: right; font-weight: bold">@Command.PaidPrice.Amount.ToString("F2") @Command.PaidPrice.Currency</p>
+    </div>
+}
+
+@code {
+    private Urls.Receipt? Url { get; set; }
+
+    private CommandResponse? Command { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Url = Urls.Receipt.Parse(NavigationManager.ToAbsoluteUri(NavigationManager.Uri));
+        if (Url is null)
+        {
+            return;
+        }
+
+        Command = await CommandHttpClient.GetCommand(Url.ReceiptId);
+    }
+}

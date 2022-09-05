@@ -11,12 +11,11 @@
 
 <div class="d-flex flex-row">
     <div class="flex-fill d-flex flex-column mx-3">
-        <CheckoutForm 
-            Url="@Url"
-            Price="@Price?.Total"
-            OnCheckout="@OnCheckout"
-            OnRedirect="@On3D1ValidationRedirect"
-            CanCheckout="@(Price is not null)" />
+        <CheckoutForm Url="@Url"
+                      Price="@Price?.Total"
+                      OnCheckout="@OnCheckout"
+                      OnRedirect="@On3D1ValidationRedirect"
+                      CanCheckout="@(Price is not null)" />
     </div>
 
     <div style="width:400px;min-height:350px;">
@@ -63,7 +62,7 @@
     }
 
     
-    private async Task OnCheckout((CheckoutForm.CheckoutFormModel Model, string Payment) t)
+    private async Task OnCheckout(CheckoutForm.CheckoutAndPaymentInfo checkoutAndPaymentInfo)
     {
         if (Url is null)
         {
@@ -72,29 +71,29 @@
 
         Price ??= await PriceHttpClient.GetCartPrice(Url.Books);
         
-        var (formModel, payment) = t;
+        var (checkoutInfo, payment) = checkoutAndPaymentInfo;
         
         var billingAddress = new Address(
-            formModel.BillingAddress.Address,
-            formModel.BillingAddress.Address2,
-            formModel.BillingAddress.ZipCode,
-            formModel.BillingAddress.Country
+            checkoutInfo.BillingAddress.Address,
+            checkoutInfo.BillingAddress.Address2,
+            checkoutInfo.BillingAddress.ZipCode,
+            checkoutInfo.BillingAddress.Country
             );
 
-        var shippingAddress = formModel.SameAddressForShippingAsBilling ?
+        var shippingAddress = checkoutInfo.SameAddressForShippingAsBilling ?
             billingAddress :
             new Address(
-                formModel.ShippingAddress.Address,
-                formModel.ShippingAddress.Address2,
-                formModel.ShippingAddress.ZipCode,
-                formModel.ShippingAddress.Country
+                checkoutInfo.ShippingAddress.Address,
+                checkoutInfo.ShippingAddress.Address2,
+                checkoutInfo.ShippingAddress.ZipCode,
+                checkoutInfo.ShippingAddress.Country
                 );
 
         var customer = new Customer(
-            formModel.FirstName,
-            formModel.LastName,
-            formModel.UserName,
-            formModel.Email,
+            checkoutInfo.FirstName,
+            checkoutInfo.LastName,
+            checkoutInfo.UserName,
+            checkoutInfo.Email,
             billingAddress,
             shippingAddress);
         
@@ -113,14 +112,14 @@
         NavigationManager.NavigateTo(receiptUrl.ToString());
     }
     
-    private void On3D1ValidationRedirect((CheckoutForm.CheckoutFormModel Model, string Url3DS1Validation) t)
+    private void On3D1ValidationRedirect(CheckoutForm.RedirectInfo redirectInfo)
     {
         if (Url is null)
         {
             return;
         }
         
-        var (model, url3DS1Validation) = t;
+        var (model, url3DS1Validation) = redirectInfo;
         
         // 1. Generate Urls.Checkout
         var checkoutUrl = Url with {

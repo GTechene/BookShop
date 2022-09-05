@@ -1,4 +1,5 @@
 using System.Net;
+using BookShop.api.Controllers;
 using BookShop.api.Errors;
 using BookShop.domain;
 using BookShop.domain.Catalog;
@@ -36,6 +37,8 @@ builder.Services.AddTransient<ILockCatalog>(services => services.GetRequiredServ
 builder.Services.AddTransient<IUpdateInventory>(services => services.GetRequiredService<InventoryRepository>());
 
 builder.Services.AddSingleton<ILogTransaction, TransactionLog>();
+
+builder.Services.AddScoped<CommandService>();
 
 builder.Services.AddScoped<CheckoutService>();
 

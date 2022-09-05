@@ -250,10 +250,14 @@ None : 4000 0000 0000 0000
     public shared.Price Price { get; set; } = null!;
 
     [Parameter]
-    public EventCallback<(CheckoutFormModel? Model, string Payment)> OnCheckout { get; set; }
+    public EventCallback<CheckoutAndPaymentInfo> OnCheckout { get; set; }
+
+    public record CheckoutAndPaymentInfo(CheckoutFormModel? Model, string Payment);
+
+    public record RedirectInfo(CheckoutFormModel Model, string Uri);
 
     [Parameter]
-    public EventCallback<(CheckoutFormModel Model, string Uri)> OnRedirect { get; set; }
+    public EventCallback<RedirectInfo> OnRedirect { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -332,7 +336,7 @@ None : 4000 0000 0000 0000
                 _validation3ds2Model = new Validation3DS2Model();
                 return;
             case PaymentValidationType.With3DS1:
-                await OnRedirect.InvokeAsync((_formModel, cardAction.RedirectUrl)!);
+                await OnRedirect.InvokeAsync(new RedirectInfo(_formModel, cardAction.RedirectUrl!));
                 return;
             default:
                 throw new NotImplementedException();
@@ -379,6 +383,6 @@ None : 4000 0000 0000 0000
             return;
         }
 
-        await OnCheckout.InvokeAsync((Model:_formModel, Payment:payment));
+        await OnCheckout.InvokeAsync(new CheckoutAndPaymentInfo(Model:_formModel, Payment:payment));
     }
 }

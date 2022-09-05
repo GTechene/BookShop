@@ -166,7 +166,7 @@ public static class Urls {
                 
                 Redirected = ReadQueryParam(query, x=> x.Redirected, v => bool.Parse(v)),
             };
-       } 
+        } 
     }
     
     public record Catalog(string[] Books) {

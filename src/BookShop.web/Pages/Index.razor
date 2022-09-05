@@ -1,6 +1,5 @@
 ﻿@page "/"
 @using BookShop.shared
-@using System.Runtime.Serialization
 
 @inject PriceHttpClient PriceHttpClient
 
@@ -46,12 +45,6 @@
     
     private async Task RefreshPrice()
     {
-        // if (!_selectedBooks.Any())
-        // {
-        //     _price = null;
-        //     return;
-        // }
-        
         var isbns = _selectedBooks.Select(book => book.ISBN).ToArray();
         _price = await PriceHttpClient.GetCartPrice(isbns);
     }

@@ -33,4 +33,3 @@ public class CheckoutController : ControllerBase {
         return new CheckoutResponse(receipt.Id.ToString());
     }
 }
-

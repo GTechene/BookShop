@@ -37,6 +37,13 @@ builder.Services.AddHttpClient<PaymentHttpClient>(
     })
     .AddHttpMessageHandler<LogErrorHttpMessageHandler>();
 
+builder.Services.AddHttpClient<CommandHttpClient>(
+        (serviceProvider, httpClient) => {
+            var options = serviceProvider.GetRequiredService<IOptions<BookShopApiOptions>>();
+            httpClient.BaseAddress = options.Value.Command.Uri;
+        })
+    .AddHttpMessageHandler<LogErrorHttpMessageHandler>();
+
 builder.Services.AddOptions<BookShopApiOptions>()
     .Bind(builder.Configuration.GetSection(BookShopApiOptions.SectionName))
     .ValidateDataAnnotations();

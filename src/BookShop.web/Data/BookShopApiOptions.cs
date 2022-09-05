@@ -11,4 +11,5 @@ public record BookShopApiOptions {
     public BackendApiOptions Catalog { get; set; } = null!;
     public BackendApiOptions Price { get; set; } = null!;
     public BackendApiOptions Checkout { get; set; } = null!;
+    public BackendApiOptions Command { get; set; } = null!;
 }
