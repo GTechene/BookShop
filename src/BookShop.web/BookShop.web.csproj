@@ -7,7 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Content Include="Styles\stars.scss" />
+    </ItemGroup>
+
+    <ItemGroup>
       <EmbeddedResource Include="Data\countries.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AspNetCore.SassCompiler" Version="1.69.5" />
     </ItemGroup>
 
     <ItemGroup>

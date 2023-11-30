@@ -350,3 +350,5 @@ MigrationBackup/
 .ionide/
 /.idea
 /*.ncrunchsolution
+/src/BookShop.web/wwwroot/css/stars.css
+/src/BookShop.web/wwwroot/css/stars.css.map
