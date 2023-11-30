@@ -45,8 +45,15 @@
     
     private async Task RefreshPrice()
     {
-        var isbns = _selectedBooks.Select(book => book.ISBN).ToArray();
-        _price = await PriceHttpClient.GetCartPrice(isbns);
+        if (_selectedBooks.Any())
+        {
+            var isbns = _selectedBooks.Select(book => book.ISBN).ToArray();
+            _price = await PriceHttpClient.GetCartPrice(isbns);
+        }
+        else
+        {
+            _price = null;
+        }
     }
 
 

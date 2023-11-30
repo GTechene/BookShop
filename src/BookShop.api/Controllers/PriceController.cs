@@ -1,5 +1,4 @@
 ﻿using BookShop.domain;
-using BookShop.domain.Prices;
 using BookShop.domain.Pricing;
 using BookShop.shared;
 using Microsoft.AspNetCore.Mvc;
@@ -33,4 +32,3 @@ public class PriceController : ControllerBase {
         );
     }
 }
-
