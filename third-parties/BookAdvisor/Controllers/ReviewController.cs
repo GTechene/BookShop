@@ -8,9 +8,9 @@ namespace BookAdvisor.Controllers;
 public class ReviewController : ControllerBase
 {
     [HttpGet]
-    [Route("ratings")]
-    public RatingsResponse GetRatings(string isbn)
+    [Route("ratings/{isbn}")]
+    public RatingsResponse GetRatings([FromRoute] string isbn)
     {
-        return new RatingsResponse(3.75m, 4);
+        return new RatingsResponse(4.3m, 4);
     }
 }

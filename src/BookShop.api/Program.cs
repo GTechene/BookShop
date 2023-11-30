@@ -1,5 +1,4 @@
 using System.Net;
-using BookShop.api.Controllers;
 using BookShop.api.Errors;
 using BookShop.domain;
 using BookShop.domain.Catalog;
@@ -38,8 +37,6 @@ builder.Services.AddTransient<IUpdateInventory>(services => services.GetRequired
 
 builder.Services.AddSingleton<ILogTransaction, TransactionLog>();
 
-builder.Services.AddScoped<CommandService>();
-
 builder.Services.AddScoped<CheckoutService>();
 
 builder.Services.AddOptions<BookPalApiOptions>()
@@ -49,6 +46,15 @@ builder.Services.AddOptions<BookPalApiOptions>()
 builder.Services.AddHttpClient<BookPalApiHttpClient>((serviceProvider, client) => {
 
     var options = serviceProvider.GetRequiredService<IOptions<BookPalApiOptions>>();
+    client.BaseAddress = options.Value.Uri;
+});
+
+builder.Services.AddOptions<BookAdvisorOptions>()
+    .ValidateDataAnnotations()
+    .Bind(builder.Configuration.GetSection(BookAdvisorOptions.Section));
+builder.Services.AddHttpClient<BookAdvisorHttpClient>((serviceProvider, client) => {
+
+    var options = serviceProvider.GetRequiredService<IOptions<BookAdvisorOptions>>();
     client.BaseAddress = options.Value.Uri;
 });
 

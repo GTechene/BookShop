@@ -1,6 +1,7 @@
 ﻿using BookShop.domain;
 using BookShop.domain.Catalog;
 using BookShop.domain.Prices;
+using BookShop.infra;
 using BookShop.shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,33 +13,37 @@ public class CatalogController : ControllerBase {
     private readonly IProvideBookPrice _bookPriceProvider;
     private readonly IProvideCatalog _catalogService;
     private readonly IProvideBookMetadata _bookMetadata;
+    private readonly BookAdvisorHttpClient _bookAdvisorHttpClient;
 
-    public CatalogController(IProvideCatalog catalogProvider, IProvideBookPrice bookPriceProvider, IProvideBookMetadata bookMetadata)
+    public CatalogController(IProvideCatalog catalogProvider, IProvideBookPrice bookPriceProvider, IProvideBookMetadata bookMetadata, BookAdvisorHttpClient bookAdvisorHttpClient)
     {
         _catalogService = catalogProvider;
         _bookPriceProvider = bookPriceProvider;
         _bookMetadata = bookMetadata;
+        _bookAdvisorHttpClient = bookAdvisorHttpClient;
     }
 
     [HttpGet]
-    public CatalogResponse GetCatalog(string currency, int pageNumber = 1, int numberOfItemsPerPage = 5)
+    public async Task<CatalogResponse> GetCatalog(string currency, int pageNumber = 1, int numberOfItemsPerPage = 5)
     {
         var catalog = _catalogService.Get(pageNumber, numberOfItemsPerPage);
-        var books = catalog.Books
-            .Select(book => {
+        var booksTasks = catalog.Books
+            .Select(async book => {
                 var unitPrice = _bookPriceProvider.GetPrice(book.Reference.Id, currency);
+                var ratings = await _bookAdvisorHttpClient.GetRatings(book.Reference.Id);
                 
                 return new BookResponse(
                     book.Reference.Id.ToString(),
                     book.Reference.Title,
                     book.Reference.Author,
                     book.Reference.NumberOfPages,
+                    ratings,
                     book.Reference.PictureUrl!.ToString(),
                     book.Quantity.Amount,
                     new shared.Price(unitPrice.Amount, unitPrice.Currency)
                 );
-            })
-            .ToArray();
+            });
+        var books = await Task.WhenAll(booksTasks);
 
         return new CatalogResponse(
             books,
