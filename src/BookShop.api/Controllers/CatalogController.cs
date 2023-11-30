@@ -32,6 +32,7 @@ public class CatalogController : ControllerBase {
                     book.Reference.Id.ToString(),
                     book.Reference.Title,
                     book.Reference.Author,
+                    book.Reference.NumberOfPages,
                     book.Reference.PictureUrl!.ToString(),
                     book.Quantity.Amount,
                     new shared.Price(unitPrice.Amount, unitPrice.Currency)

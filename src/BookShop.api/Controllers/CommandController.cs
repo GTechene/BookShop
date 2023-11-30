@@ -29,9 +29,9 @@ public class CommandService
     {
         return new CommandResponse(new[]
         {
-            new BookResponse("12", "Encaisse", "René", "", 1, new Price(2, "EUR")),
-            new BookResponse("12", "Encaisse", "René", "", 1, new Price(2, "EUR")),
-            new BookResponse("3", "Encaisse 2 le retour", "René", "", 1, new Price(2, "EUR")),
+            new BookResponse("12", "Encaisse", "René", 35, "", 1, new Price(2, "EUR")),
+            new BookResponse("12", "Encaisse", "René", 154,"", 1, new Price(2, "EUR")),
+            new BookResponse("3", "Encaisse 2 le retour", "René", 660,"", 1, new Price(2, "EUR")),
         }, 
             new Price(12m, "USD"));
     }

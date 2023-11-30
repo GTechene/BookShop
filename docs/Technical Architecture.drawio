@@ -1,1 +1,49 @@
-<mxfile host="Electron" modified="2022-08-06T09:59:47.338Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/19.0.3 Chrome/102.0.5005.63 Electron/19.0.3 Safari/537.36" etag="ruCSFCzU1HFGNcGir5gJ" version="19.0.3" type="device"><diagram id="Zonf7OqJn_h74SSYX7Ik" name="Page-1">7Vjfc6IwEP5rnLl7aAdB0T5W7a9pneuMN9Ne3yLZQs7AMiEo3F9/QYJAUdvrtMp07kXZLwtJvm93s9Cxxn5yJUjoTZEC75gGTTrWpGOa3a5hqb8MSXNkYPdzwBWMaqcSmLE/oEFDozGjENUcJSKXLKyDDgYBOLKGESFwVXd7Rl6fNSQuNICZQ3gTfWBUeho9M41y4BqY6xVTm4Ye8UnhrYHIIxRXFci66FhjgSjzKz8ZA8/YK4jJ77vcMbpZmYBAvuWGWwueLulJTKb+zyf39mR0/TA/OdNrk2mxY6CKAG2ikB66GBB+UaIjgXFAIXuqoazS5w4xVGBXgb9BylSrSWKJCvKkz/WoWrBIH/X9a+NXZpz2C3OSVAcnadW6B8F8kCA02KRBMxNhLBzYs/cinohwQe7x6+V+GTGVCTTJV4BqNSJVDgI4kWxZjxyiA9Dd+JUSqQut0j8oVmTGf8n2+PXbJVm3RZLtEaxvlnoeXjO7XZqZx9AsUizJ8+zcUoDDSRQxp4AvGS/dBC5gjBwzeSg8k5jLg4g0bJdI1nET67RXr4bd91TDmuYBBvBCcOOogg/aJXj+3CXhsZ5phLiYSRSg4PP7m0Y8qK4rzC49SIiSWXEWVvjX6EYStbPRymMSZiFZ07dSbW1d/WeWQNGodvdJsAQhIdlLmh61izNdN8nWQNurSstZtJFepdscGp/E85Hzqp5V5mtNxvuzwHxjFnRblQVmIwvGnGV7N41v8+ydR8W2aWD2E+TLUYsIw+9NUTlXL1LwetB/QJD3BvUgHx47xntba4lCpiAJJZKoy8loZ0FxUs5UvAvrdfbmeWbczTcAcRbuOl9+xFI9pqglkS4r/Y+hfPOWqik3t9QV+5CU93dRfhMs1TZxvfivxfm2Wn5Qzu0G51MiFiBDnlH31ejubSkrB6V70KD7CpEKIDTa0aGURXjDO8eYHqQo28M6fbZ97Ko8bPB3T1I/P9zaxp714kizrc9jT5nlp8L1WOWLq3XxFw==</diagram></mxfile>
+<mxfile host="Electron" modified="2023-11-30T14:27:44.311Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.2 Chrome/114.0.5735.289 Electron/25.9.4 Safari/537.36" etag="EORi0ENBMn3wiYWkWwa4" version="22.1.2" type="device">
+  <diagram id="Zonf7OqJn_h74SSYX7Ik" name="Page-1">
+    <mxGraphModel dx="1098" dy="988" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="K3eZFd-uaMmTZgK-BHWb-1" target="K3eZFd-uaMmTZgK-BHWb-4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="K3eZFd-uaMmTZgK-BHWb-1" target="K3eZFd-uaMmTZgK-BHWb-5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=0;entryDy=52.5;entryPerimeter=0;" parent="1" source="K3eZFd-uaMmTZgK-BHWb-1" target="K3eZFd-uaMmTZgK-BHWb-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;strokeColor=default;" parent="1" source="K3eZFd-uaMmTZgK-BHWb-1" target="K3eZFd-uaMmTZgK-BHWb-8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-13" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.4;entryY=0.1;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;startFill=0;strokeColor=default;edgeStyle=orthogonalEdgeStyle;" parent="1" source="K3eZFd-uaMmTZgK-BHWb-1" target="K3eZFd-uaMmTZgK-BHWb-7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-1" value="BookStore API" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+          <mxGeometry x="610" y="260" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="K3eZFd-uaMmTZgK-BHWb-2" target="K3eZFd-uaMmTZgK-BHWb-1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-2" value="Client (browser or native app)" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="470" y="80" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-4" value="Book Metadata DB" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+          <mxGeometry x="920" y="160" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-5" value="Book Inventory DB" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+          <mxGeometry x="920" y="260" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-6" value="Discount DB" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+          <mxGeometry x="920" y="370" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-7" value="BookAdvisor API" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="650" y="500" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="K3eZFd-uaMmTZgK-BHWb-8" value="Payment API" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="370" y="500" width="120" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

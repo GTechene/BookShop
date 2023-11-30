@@ -11,7 +11,8 @@
             <div class="card-body">
                 <h5 class="card-title">@BookToDisplay.Title</h5>
                 <p class="card-text">
-                    Author:&nbsp;<b>@BookToDisplay.Author</b>
+                    Author:&nbsp;<b>@BookToDisplay.Author</b><br />
+                    @BookToDisplay.NumberOfPages pages
                 </p>
                 
                 @if (BookToDisplay.Quantity == 0)
