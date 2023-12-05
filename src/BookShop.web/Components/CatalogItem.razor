@@ -15,7 +15,16 @@
                     Author:&nbsp;<b>@BookToDisplay.Author</b><br />
                     @BookToDisplay.NumberOfPages pages
                 </p>
-                <div class="Stars" style="--rating: @BookToDisplay.Ratings.AverageRating.ToString(CultureInfo.InvariantCulture)"></div> (@BookToDisplay.Ratings.NumberOfRatings reviews)
+                
+                @if (BookToDisplay.Ratings.NumberOfRatings > 0)
+                {
+                    <div class="Stars" style="--rating: @BookToDisplay.Ratings.AverageRating.ToString(CultureInfo.InvariantCulture)"></div>
+                    <i>(@BookToDisplay.Ratings.NumberOfRatings reviews)</i>
+                }
+                else
+                {
+                    <i>No review for this book yet !</i>
+                }
                 
                 @if (BookToDisplay.Quantity == 0)
                 {

@@ -352,3 +352,5 @@ MigrationBackup/
 /*.ncrunchsolution
 /src/BookShop.web/wwwroot/css/stars.css
 /src/BookShop.web/wwwroot/css/stars.css.map
+/docs/.$Technical Architecture.drawio.bkp
+/docs/.$Technical Architecture.drawio.dtmp

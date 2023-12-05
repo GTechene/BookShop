@@ -1,3 +1,4 @@
+using BookAdvisor.Repositories;
 using BookShop.shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,10 +8,21 @@ namespace BookAdvisor.Controllers;
 [Route("reviews")]
 public class ReviewController : ControllerBase
 {
+    private readonly IReviewRepository _reviewRepository;
+    public ReviewController(IReviewRepository reviewRepository)
+    {
+        _reviewRepository = reviewRepository;
+    }
+
     [HttpGet]
     [Route("ratings/{isbn}")]
-    public RatingsResponse GetRatings([FromRoute] string isbn)
+    public ActionResult<RatingsResponse> GetRatings([FromRoute] string isbn)
     {
-        return new RatingsResponse(4.3m, 4);
+        var ratingsResponse = _reviewRepository.GetReviews(isbn);
+        if (ratingsResponse == null)
+        {
+            return NotFound();
+        }
+        return Ok(ratingsResponse);
     }
 }

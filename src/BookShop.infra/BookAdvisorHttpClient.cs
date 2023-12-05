@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using BookShop.domain;
 using BookShop.shared;
 
@@ -13,8 +14,15 @@ public class BookAdvisorHttpClient
         _httpClient = httpClient;
     }
 
-    public async Task<RatingsResponse?> GetRatings(ISBN isbn)
+    public async Task<RatingsResponse> GetRatings(ISBN isbn)
     {
-        return await _httpClient.GetFromJsonAsync<RatingsResponse>($"/reviews/ratings/{isbn}");
+        var response = await _httpClient.GetAsync($"/reviews/ratings/{isbn}");
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return new RatingsResponse(0m, 0);
+        }
+
+        return await response.Content.ReadFromJsonAsync<RatingsResponse>();
     }
 }
