@@ -7,6 +7,7 @@ using BookShop.domain.Checkout.Payment;
 using BookShop.domain.Prices;
 using BookShop.domain.Pricing;
 using BookShop.domain.Pricing.Discounts;
+using BookShop.domain.Receipt;
 using BookShop.infra;
 using Microsoft.Extensions.Options;
 
@@ -35,7 +36,8 @@ builder.Services.AddTransient<IProvideInventory>(services => services.GetRequire
 builder.Services.AddTransient<ILockCatalog>(services => services.GetRequiredService<InventoryRepository>());
 builder.Services.AddTransient<IUpdateInventory>(services => services.GetRequiredService<InventoryRepository>());
 
-builder.Services.AddSingleton<ILogTransaction, TransactionLog>();
+builder.Services.AddSingleton<IManageTransactions, TransactionLog>();
+builder.Services.AddScoped<IProvideReceiptDetails, ReceiptDetailsService>();
 
 builder.Services.AddScoped<CheckoutService>();
 

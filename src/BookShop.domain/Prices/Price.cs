@@ -8,6 +8,11 @@ public record Price(decimal Amount, string Currency) {
         return new(0, currency);
     }
 
+    public static Price Null()
+    {
+        return Price.Zero(string.Empty);
+    }
+
     public static Price operator *(Price p, Percent percent)
     {
         return p with

@@ -16,7 +16,7 @@ public class CheckoutService
     private readonly IProcessPayment _paymentService;
 
     private readonly CartPricer _pricer;
-    private readonly ILogTransaction _transactionLog;
+    private readonly IManageTransactions _transactionLog;
     private readonly IProvideInventory _inventoryProvider;
 
     public CheckoutService(
@@ -24,7 +24,7 @@ public class CheckoutService
         IProvideBookMetadata bookMetadataProvider,
         IUpdateInventory inventoryManager,
         ILockCatalog catalogLock,
-        ILogTransaction transactionLog,
+        IManageTransactions transactionLog,
         IProcessPayment paymentService,
         IProvideInventory inventoryProvider)
     {

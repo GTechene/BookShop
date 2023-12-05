@@ -72,6 +72,17 @@ public class BookMetadataRepository : IProvideBookMetadata
 
         return result;
     }
+    public BookMetadataForReceipt GetMetadataForReceipt(ISBN isbn)
+    {
+        var reference = _books.SingleOrDefault(book => book.Id == isbn);
+
+        if (reference == null)
+        {
+            return new UnknownBookMetadataForReceipt(isbn);
+        }
+
+        return new BookMetadataForReceipt(reference.Title, reference.Author, reference.PictureUrl);
+    }
 
     private static IEnumerable<BookReference> GetBooks()
     {

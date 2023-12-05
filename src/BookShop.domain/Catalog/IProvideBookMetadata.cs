@@ -3,4 +3,5 @@
 public interface IProvideBookMetadata {
     List<BookReference> Get();
     BookReference Get(ISBN isbn);
+    BookMetadataForReceipt GetMetadataForReceipt(ISBN isbn);
 }

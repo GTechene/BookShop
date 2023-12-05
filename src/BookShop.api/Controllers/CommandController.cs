@@ -1,4 +1,6 @@
-﻿using BookShop.shared;
+﻿using BookShop.domain.Checkout;
+using BookShop.domain.Receipt;
+using BookShop.shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.api.Controllers;
@@ -7,32 +9,19 @@ namespace BookShop.api.Controllers;
 [ApiController]
 public class CommandController : ControllerBase
 {
-    private readonly CommandService _commandService;
-
-    public CommandController(CommandService commandService)
+    private readonly IProvideReceiptDetails _receiptDetailsProvider;
+    public CommandController(IProvideReceiptDetails receiptDetailsProvider)
     {
-        _commandService = commandService;
+        _receiptDetailsProvider = receiptDetailsProvider;
     }
 
     [HttpGet]
     [Route("{commandId}")]
-    public async Task<CommandResponse> GetCommand([FromRoute] Guid commandId)
+    public CommandResponse GetCommand([FromRoute] Guid commandId)
     {
-        return await _commandService.Get(commandId);
-    }
-}
+        var (bookDetails, paidPrice) = _receiptDetailsProvider.Get(new ReceiptId(commandId));
+        var bookDetailsResponse = bookDetails.Select(detail => new ReceiptBookResponse(detail.Title, detail.Author, detail.PictureUrl?.ToString() ?? string.Empty, detail.OrderedQuantity, new Price(detail.UnitPrice.Amount, detail.UnitPrice.Currency))).ToArray();
 
-// TODO : put in Domain layer and read data from TransactionLog
-public class CommandService
-{
-    public async Task<CommandResponse> Get(Guid commandId)
-    {
-        return new CommandResponse(new[]
-        {
-            new BookResponse("12", "Encaisse", "René", 35, new RatingsResponse(2.6m, 3215), "", 1, new Price(2, "EUR")),
-            new BookResponse("12", "Encaisse", "René", 154, new RatingsResponse(4.2m, 15), "", 1, new Price(2, "EUR")),
-            new BookResponse("3", "Encaisse 2 le retour", "René", 660,new RatingsResponse(3.9m, 548), "", 1, new Price(2, "EUR")),
-        }, 
-            new Price(12m, "USD"));
+        return new CommandResponse(bookDetailsResponse, new Price(paidPrice.Amount, paidPrice.Currency));
     }
 }

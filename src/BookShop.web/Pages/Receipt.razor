@@ -13,14 +13,13 @@
         <h5 class="card-header">Command #@Url!.ReceiptId</h5>
         <div class="card-body">
             <ul class="list-group">
-                @foreach (var group in Command.Books.GroupBy(book => book.ISBN))
+                @foreach (var book in Command.Books)
                 {
                     <li class="list-group-item">
                         @{
                             // TODO : align number of books to the right
-                            var books = Command.Books.Where(book => book.ISBN == group.Key).ToList();
                         }
-                        @books.First().Title ×@books.Count
+                        @book.Title ×@book.Quantity
                     </li>
                 }
             </ul>
