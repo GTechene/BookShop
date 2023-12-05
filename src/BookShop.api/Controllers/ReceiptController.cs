@@ -7,21 +7,21 @@ namespace BookShop.api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CommandController : ControllerBase
+public class ReceiptController : ControllerBase
 {
     private readonly IProvideReceiptDetails _receiptDetailsProvider;
-    public CommandController(IProvideReceiptDetails receiptDetailsProvider)
+    public ReceiptController(IProvideReceiptDetails receiptDetailsProvider)
     {
         _receiptDetailsProvider = receiptDetailsProvider;
     }
 
     [HttpGet]
-    [Route("{commandId}")]
-    public CommandResponse GetCommand([FromRoute] Guid commandId)
+    [Route("{receiptId}")]
+    public ReceiptResponse Get([FromRoute] Guid receiptId)
     {
-        var (bookDetails, paidPrice) = _receiptDetailsProvider.Get(new ReceiptId(commandId));
+        var (bookDetails, paidPrice) = _receiptDetailsProvider.Get(new ReceiptId(receiptId));
         var bookDetailsResponse = bookDetails.Select(detail => new ReceiptBookResponse(detail.Title, detail.Author, detail.PictureUrl?.ToString() ?? string.Empty, detail.OrderedQuantity, new Price(detail.UnitPrice.Amount, detail.UnitPrice.Currency))).ToArray();
 
-        return new CommandResponse(bookDetailsResponse, new Price(paidPrice.Amount, paidPrice.Currency));
+        return new ReceiptResponse(bookDetailsResponse, new Price(paidPrice.Amount, paidPrice.Currency));
     }
 }

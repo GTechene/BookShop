@@ -2,18 +2,18 @@
 @using BookShop.shared
 
 @inject NavigationManager NavigationManager
-@inject CommandHttpClient CommandHttpClient
+@inject ReceiptHttpClient ReceiptHttpClient
 
 <PageTitle>Receipt</PageTitle>
 
 <h1>Thank you for your purchase !</h1>
-@if (Command != null)
+@if (ReceiptResponse != null)
 {
     <div class="card" style="width: 48em">
-        <h5 class="card-header">Command #@Url!.ReceiptId</h5>
+        <h5 class="card-header">Order #@Url!.ReceiptId</h5>
         <div class="card-body">
             <ul class="list-group">
-                @foreach (var book in Command.Books)
+                @foreach (var book in ReceiptResponse.Books)
                 {
                     <li class="list-group-item">
                         @{
@@ -24,14 +24,14 @@
                 }
             </ul>
         </div>
-        <p class="card-footer" style="text-align: right; font-weight: bold">@Command.PaidPrice.Amount.ToString("F2") @Command.PaidPrice.Currency</p>
+        <p class="card-footer" style="text-align: right; font-weight: bold">@ReceiptResponse.PaidPrice.Amount.ToString("F2") @ReceiptResponse.PaidPrice.Currency</p>
     </div>
 }
 
 @code {
     private Urls.Receipt? Url { get; set; }
 
-    private CommandResponse? Command { get; set; }
+    private ReceiptResponse? ReceiptResponse { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,6 +41,6 @@
             return;
         }
 
-        Command = await CommandHttpClient.GetCommand(Url.ReceiptId);
+        ReceiptResponse = await ReceiptHttpClient.GetReceipt(Url.ReceiptId);
     }
 }

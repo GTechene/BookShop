@@ -37,10 +37,10 @@ builder.Services.AddHttpClient<PaymentHttpClient>(
     })
     .AddHttpMessageHandler<LogErrorHttpMessageHandler>();
 
-builder.Services.AddHttpClient<CommandHttpClient>(
+builder.Services.AddHttpClient<ReceiptHttpClient>(
         (serviceProvider, httpClient) => {
             var options = serviceProvider.GetRequiredService<IOptions<BookShopApiOptions>>();
-            httpClient.BaseAddress = options.Value.Command.Uri;
+            httpClient.BaseAddress = options.Value.Receipt.Uri;
         })
     .AddHttpMessageHandler<LogErrorHttpMessageHandler>();
 
