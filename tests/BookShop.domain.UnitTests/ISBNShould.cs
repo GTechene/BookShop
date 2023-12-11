@@ -1,7 +1,7 @@
 ﻿using NFluent;
 using Xunit;
 
-namespace BookShop.domain.Tests;
+namespace BookShop.domain.UnitTests;
 
 public class ISBNShould {
     [Fact]

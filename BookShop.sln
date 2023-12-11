@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.api", "src\BookSho
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.domain", "src\BookShop.domain\BookShop.domain.csproj", "{59FB79E3-5D7D-4748-8EF9-25E75E0C4600}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.domain.Tests", "tests\BookShop.domain.Tests\BookShop.domain.Tests.csproj", "{2CE17409-E3F0-431F-B817-C4A484960A61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.domain.UnitTests", "tests\BookShop.domain.UnitTests\BookShop.domain.UnitTests.csproj", "{2CE17409-E3F0-431F-B817-C4A484960A61}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.infra", "src\BookShop.infra\BookShop.infra.csproj", "{0BF24C46-028D-471F-83F4-68BFB8F0A487}"
 EndProject

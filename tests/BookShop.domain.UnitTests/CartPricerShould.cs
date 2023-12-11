@@ -8,7 +8,7 @@ using NFluent;
 using NSubstitute;
 using Xunit;
 
-namespace BookShop.domain.Tests;
+namespace BookShop.domain.UnitTests;
 
 public class CartPricerShould {
 
