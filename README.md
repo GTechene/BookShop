@@ -4,7 +4,19 @@ This code base exists mostly as a support for a series of articles about accepta
 
 It is a website (front-end + back-end) written in C# that mimics an online book shop where you can browse through the catalog of 6 (!) books and add them to your cart, check it out and even pay for it.
 
-# How it works
+There is also an implementation of the [Potter kata](https://codingdojo.org/kata/Potter/), only using a non-transphobic author and her work.
+
+# How to make it work
+
+The following projects must be launched :
+- backend : `dotnet run --project src\BookShop.api`
+- frontend : `dotnet run --project src\BookShop.web`
+- reviews : `dotnet run --project third-parties\BookAdvisor`
+- payment : `dotnet run --project third-parties\BookPal`
+
+Then open a browser at https://localhost:7261
+
+# Payment notes
 
 In order for the payment to work, use one of those three credit cards :
 - 4000 0000 0000 0000 : it's a "yes card", meaning the payment will always work without any further challenge.
