@@ -6,6 +6,9 @@ It is a website (front-end + back-end) written in C# that mimics an online book 
 
 There is also an implementation of the [Potter kata](https://codingdojo.org/kata/Potter/), only using a non-transphobic author and her work.
 
+[The architecture is hexagonal](https://tpierrain.blogspot.com/2020/11/hexagonal-or-not-hexagonal.html), meaning there is a central module that contains all the business model and logic and that does not depend on other technical layers. Here is a diagram of the modules :
+![Technical architecture](docs/Technical_Architecture.png)
+
 # How to make it work
 
 The following projects must be launched :
