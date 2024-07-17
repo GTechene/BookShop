@@ -27,7 +27,7 @@ public class BookMetadataRepository : IProvideBookMetadata
         "Tui T. Sutherland",
         326,
         new Uri(
-            "https://s1.qwant.com/thumbr/0x380/b/0/1f6b01fca18c48b39ab5b28f5e1823039bd249d6f71034ebab4eec95053410/71bjmewcntl-1.jpg?u=https%3A%2F%2Froguewatson.files.wordpress.com%2F2019%2F05%2F71bjmewcntl-1.jpg&q=0&b=1&p=0&a=0"));
+            "https://embed.cdn.pais.scholastic.com/v1/products/identifiers/isbn/9780545349253/primary/renditions/700"));
 
     private static readonly BookReference TheDarkSecret = new(
         ISBN.Parse("978-133888322-0"),
@@ -35,7 +35,7 @@ public class BookMetadataRepository : IProvideBookMetadata
         "Tui T. Sutherland",
         354,
         new Uri(
-            "https://s2.qwant.com/thumbr/0x380/c/f/7c6941c5f16aece63bd4f11a4d1e936303de4c141bd2d3e748ab20d685ae8d/9780545349260.jpg?u=https%3A%2F%2Fimages.thenile.io%2Fr1000%2F9780545349260.jpg&q=0&b=1&p=0&a=0"));
+            "https://embed.cdn.pais.scholastic.com/v1/products/identifiers/isbn/9780545349260/primary/renditions/700"));
 
     private static readonly BookReference TheBrightestNight = new(
         ISBN.Parse("978-060637017-2"),
@@ -51,7 +51,15 @@ public class BookMetadataRepository : IProvideBookMetadata
         "Tui T. Sutherland",
         299,
         new Uri(
-            "https://s1.qwant.com/thumbr/0x380/9/9/683b67d0de9c96101174b7fda79181c3b581d8c38dad2ffeb97d9d9cbf496d/9781432874247.jpg?u=https%3A%2F%2Fi.thenile.io%2Fr1000%2F9781432874247.jpg%3Fr%3D5f1ae53b26fd2&q=0&b=1&p=0&a=0"));
+            "https://cdn11.bigcommerce.com/s-gibnfyxosi/images/stencil/1280w/products/61935/63763/51UtW35MgDL__48483.1615522638.jpg?c=1"));
+
+    private static readonly BookReference WinterTurning = new(
+        ISBN.Parse("978-0545685375"),
+        "Winter Turning (Wings of Fire #7)",
+        "Tui T. Sutherland",
+        336,
+        new Uri(
+            "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1419320915i/23604435.jpg"));
 
     // TODO: maybe the book class should be renamed "BookStorageItem" ou "BookItem" and should be kept int the infra layer. Domain only requires a BookReference and a Quantity which can be achieved using a tuple. Book can also be misleading here. Is this really the physical book ? 
     private readonly List<BookReference> _books = GetBooks().ToList();
@@ -92,5 +100,6 @@ public class BookMetadataRepository : IProvideBookMetadata
         yield return TheDarkSecret;
         yield return TheBrightestNight;
         yield return MoonRising;
+        yield return WinterTurning;
     }
 }

@@ -14,7 +14,8 @@ public class InventoryRepository : IProvideInventory, IUpdateInventory, ILockCat
         [ISBN.Parse("978-133888321-3")] = 12,
         [ISBN.Parse("978-133888322-0")] = 12,
         [ISBN.Parse("978-060637017-2")] = 5,
-        [ISBN.Parse("978-0545685368")] = 12
+        [ISBN.Parse("978-0545685368")] = 12,
+        [ISBN.Parse("978-0545685375")] = 6
     };
 
     public IEnumerable<Book> Get(IEnumerable<BookReference> bookReferences)
