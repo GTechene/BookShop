@@ -1,8 +1,10 @@
 ﻿using Diverse;
+using sas.Scenario;
 
 namespace BookShop.AcceptanceTests;
 
-public class CatalogListScenario {
+public class CatalogListScenario : BaseScenario
+{
     public int NumberOfBooksPerPage { get; private set; } = 5;
 
     private readonly Fuzzer _fuzzer;

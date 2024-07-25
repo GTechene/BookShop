@@ -1,27 +1,20 @@
 ﻿using BookShop.domain.Catalog;
-using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using sas.Scenario;
+using sas.simulators.nsubstitute;
 
 namespace BookShop.AcceptanceTests.Simulators;
 
-public class MetadataSimulator
+public class MetadataSimulator : BaseSimulator<IProvideBookMetadata>
 {
-    private readonly IProvideBookMetadata _metadataProvider;
-
-    public MetadataSimulator(CatalogListScenario scenario)
+    protected override void Simulate(BaseScenario baseScenario)
     {
-        _metadataProvider = Substitute.For<IProvideBookMetadata>();
-        Simulate(scenario);
-    }
+        if (baseScenario is not CatalogListScenario scenario)
+        {
+            return;
+        }
 
-    private void Simulate(CatalogListScenario scenario)
-    {
         var bookReferences = scenario.Books.Select(book => book.ToBookReference()).ToList();
-        _metadataProvider.Get().Returns(bookReferences);
-    }
-
-    public void Register(IServiceCollection services)
-    {
-        services.AddTransient(_ => _metadataProvider);
+        Instance.Get().Returns(bookReferences);
     }
 }

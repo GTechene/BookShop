@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using BookShop.shared;
+﻿using BookShop.shared;
 using Diverse;
 using NFluent;
 using Xunit;
@@ -14,15 +12,17 @@ public class CatalogControllerShould
     public async Task List_all_books_when_called_on_GetCatalog()
     {
         var scenario = new CatalogListScenario();
-        var api = new CatalogApi(scenario);
+        var api = CatalogApi.CreateApi(scenario);
 
         var response = await api.GetCatalog("EUR");
 
-        Check.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        var catalogResponse = await response.Content.ReadFromJsonAsync<CatalogResponse>();
-        Check.That(catalogResponse).IsNotNull();
-        Check.That(catalogResponse!.Books).HasSize(scenario.Books.Length);
-        Check.That(catalogResponse.TotalNumberOfPages).IsEqualTo(1);
+        Check.That(response).IsOk<CatalogResponse>()
+            .WhichPayload(catalogResponse =>
+            {
+                Check.That(catalogResponse).IsNotNull();
+                Check.That(catalogResponse!.Books).HasSize(scenario.Books.Length);
+                Check.That(catalogResponse.TotalNumberOfPages).IsEqualTo(1);
+            });
     }
 
     [Fact]
@@ -32,15 +32,17 @@ public class CatalogControllerShould
             .WithNumberOfBooksPerPage(3)
             .WithRandomBooks(5);
 
-        var api = new CatalogApi(scenario);
+        var api = CatalogApi.CreateApi(scenario);
 
-        var response = await api.GetCatalog("EUR");
+        var response = await api.GetCatalog("EUR", 3);
 
-        Check.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        var catalogResponse = await response.Content.ReadFromJsonAsync<CatalogResponse>();
-        Check.That(catalogResponse).IsNotNull();
-        Check.That(catalogResponse!.TotalNumberOfPages).IsEqualTo(2);
-        Check.That(catalogResponse.Books).HasSize(3);
+        Check.That(response).IsOk<CatalogResponse>()
+            .WhichPayload(catalogResponse =>
+            {
+                Check.That(catalogResponse).IsNotNull();
+                Check.That(catalogResponse!.Books).HasSize(3);
+                Check.That(catalogResponse.TotalNumberOfPages).IsEqualTo(2);
+            });
     }
 
     public CatalogControllerShould(ITestOutputHelper output)

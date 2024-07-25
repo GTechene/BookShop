@@ -1,35 +1,25 @@
 ﻿using BookShop.AcceptanceTests.Simulators;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
+using sas.Api;
+using sas.Configurations;
+using sas.Simulators;
 
 namespace BookShop.AcceptanceTests;
 
-public class CatalogApi
+public class CatalogApi : BaseApi<Program>
 {
-    private readonly CatalogListScenario _scenario;
-    private readonly HttpClient _httpClient;
+    private CatalogApi(CatalogListScenario scenario, ISimulateBehaviour[] simulators, IEnrichConfiguration[] configurations) : base(scenario, simulators, configurations) {}
 
-    public CatalogApi(CatalogListScenario scenario)
+    public static CatalogApi CreateApi(CatalogListScenario scenario)
     {
-        _scenario = scenario;
-        var api = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureTestServices(services => {
-                var metadataProvider = new MetadataSimulator(scenario);
-                metadataProvider.Register(services);
-
-                var inventoryProvider = new InventorySimulator(scenario);
-                inventoryProvider.Register(services);
-
-                BookAdvisorSimulator.Register(services);
-            });
-        });
-
-        _httpClient = api.CreateDefaultClient();
+        return new CatalogApi(scenario, [
+            new BookAdvisorSimulator(),
+            new InventorySimulator(),
+            new MetadataSimulator()
+        ], []);
     }
 
-    public async Task<HttpResponseMessage> GetCatalog(string currency)
+    public async Task<HttpResponseMessage> GetCatalog(string currency, int numberOfBooksPerPage = 5)
     {
-        return await _httpClient.GetAsync($"api/Catalog?currency={currency}&pageNumber=1&numberOfItemsPerPage={_scenario.NumberOfBooksPerPage}");
+        return await HttpClient.GetAsync($"api/Catalog?currency={currency}&pageNumber=1&numberOfItemsPerPage={numberOfBooksPerPage}");
     }
 }

@@ -1,32 +1,25 @@
 ﻿using BookShop.domain.Catalog;
-using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using sas.Scenario;
+using sas.simulators.nsubstitute;
 
 namespace BookShop.AcceptanceTests.Simulators;
 
-public class InventorySimulator
+public class InventorySimulator : BaseSimulator<IProvideInventory>
 {
-    private readonly IProvideInventory _inventoryProvider;
-
-    public InventorySimulator(CatalogListScenario scenario)
+    protected override void Simulate(BaseScenario baseScenario)
     {
-        _inventoryProvider = Substitute.For<IProvideInventory>();
-        Simulate(scenario);
-    }
+        if (baseScenario is not CatalogListScenario scenario)
+        {
+            return;
+        }
 
-    private void Simulate(CatalogListScenario scenario)
-    {
         var books = scenario.Books.Select(book => book.ToBook()).ToList();
-        _inventoryProvider.Get(Arg.Any<IEnumerable<BookReference>>())
+        Instance.Get(Arg.Any<IEnumerable<BookReference>>())
             .Returns(callInfo =>
             {
                 var requestedBooksIsbns = callInfo.Arg<IEnumerable<BookReference>>();
                 return books.IntersectBy(requestedBooksIsbns, book => book.Reference);
             });
-    }
-
-    public void Register(IServiceCollection services)
-    {
-        services.AddTransient(_ => _inventoryProvider);
     }
 }
